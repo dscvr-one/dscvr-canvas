@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "module": "ESNext",
+    "target": "esnext",
+    "lib": ["ESNext", "DOM"],
+    "moduleDetection": "force",
+    "moduleResolution": "node",
+    "outDir": "dist",
+    "skipLibCheck": true,
+    "esModuleInterop": true
+  },
+  "ts-node": {
+    "esm": true,
+    "experimentalSpecifierResolution": "node"
+  },
+  "includes": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
+}

@@ -9,7 +9,7 @@ export const createClientMessageSchema = <
   payloadSchema: D,
 ) =>
   zod.object({
-    type: zod.enum([type]),
+    type: zod.literal(type),
     payload: payloadSchema,
   });
 
@@ -21,7 +21,7 @@ export const createHostMessageSchema = <
   untrustedSchema: D,
 ) =>
   zod.object({
-    type: zod.enum([type]),
+    type: zod.literal(type),
     untrusted: untrustedSchema,
     trustedBytes: zod.string(),
   });

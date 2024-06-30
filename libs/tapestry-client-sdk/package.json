@@ -11,6 +11,7 @@
   ],
   "scripts": {
     "build": "tsup",
+    "doc": "typedoc",
     "lint:js": "npm run lint:eslint && npm run lint:prettier",
     "lint:eslint": "eslint \"{,!(node_modules|dist|static)/**/}*.{js,ts}\" --ignore-path .gitignore",
     "lint:prettier": "prettier --check \"{,!(node_modules|dist|static)/**/}*.{js,ts}\" --ignore-path .gitignore",
@@ -45,11 +46,12 @@
     "shipjs": "0.26.3",
     "ts-node": "^10.9.2",
     "tsup": "^8.0.2",
+    "typedoc": "^0.26.3",
+    "typedoc-plugin-zod": "^1.2.0",
     "typescript": "^5.3.3"
   },
   "exports": {
     ".": [
-      "./dist/index.js",
       "./src/index.ts"
     ]
   }

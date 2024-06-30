@@ -35,8 +35,10 @@ export const CloseMessageSchema = createHostMessageSchema(
   zod.undefined(),
 );
 
-export type User = zod.infer<typeof UserSchema>;
-export type Content = zod.infer<typeof ContentSchema>;
-export type InitRequestMessage = zod.infer<typeof InitRequestMessageSchema>;
-export type InitResponseMessage = zod.infer<typeof InitResponseMessageSchema>;
-export type CloseMessage = zod.infer<typeof CloseMessageSchema>;
+export interface User extends zod.infer<typeof UserSchema> {}
+export interface Content extends zod.infer<typeof ContentSchema> {}
+export interface InitRequestMessage
+  extends zod.infer<typeof InitRequestMessageSchema> {}
+export interface InitResponseMessage
+  extends zod.infer<typeof InitResponseMessageSchema> {}
+export interface CloseMessage extends zod.infer<typeof CloseMessageSchema> {}

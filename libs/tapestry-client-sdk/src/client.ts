@@ -52,7 +52,9 @@ export class TapestryClient {
     });
   }
 
-  connectWallet(chainId: string) {
+  connectWallet(
+    chainId: string,
+  ): Promise<TapestryInterface.Transactions.ConnectWalletResponseMessage> {
     const responsePromise =
       new Promise<TapestryInterface.Transactions.ConnectWalletResponseMessage>(
         (resolve) => {

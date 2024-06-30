@@ -1,5 +1,5 @@
 import * as zod from 'zod';
-import { createClientMessageSchema, createHostMessageSchema } from './base';
+import { createClientMessageSchema } from './base';
 
 export const OpenLnkRequestMessageSchema = createClientMessageSchema(
   'open-link-request',
@@ -8,6 +8,5 @@ export const OpenLnkRequestMessageSchema = createClientMessageSchema(
   }),
 );
 
-export type OpenLnkRequestMessage = zod.infer<
-  typeof OpenLnkRequestMessageSchema
->;
+export interface OpenLnkRequestMessage
+  extends zod.infer<typeof OpenLnkRequestMessageSchema> {}

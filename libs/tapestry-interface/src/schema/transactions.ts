@@ -46,15 +46,11 @@ export const SignTransactionResponseMessageSchema = createHostMessageSchema(
   ]),
 );
 
-export type ConnectWalletRequestMessage = zod.infer<
-  typeof ConnectWalletRequestMessageSchema
->;
-export type ConnectWalletResponseMessage = zod.infer<
-  typeof ConnectWalletResponseMessageSchema
->;
-export type SignTransactionRequestMessage = zod.infer<
-  typeof SignTransactionRequestMessageSchema
->;
-export type SignTransactionResponseMessage = zod.infer<
-  typeof SignTransactionResponseMessageSchema
->;
+export interface ConnectWalletRequestMessage
+  extends zod.infer<typeof ConnectWalletRequestMessageSchema> {}
+export interface ConnectWalletResponseMessage
+  extends zod.infer<typeof ConnectWalletResponseMessageSchema> {}
+export interface SignTransactionRequestMessage
+  extends zod.infer<typeof SignTransactionRequestMessageSchema> {}
+export interface SignTransactionResponseMessage
+  extends zod.infer<typeof SignTransactionResponseMessageSchema> {}

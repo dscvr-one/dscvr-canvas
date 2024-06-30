@@ -1,6 +1,6 @@
 # @dscvr-one/tapestry-client-sdk
 
-tapestry-client-sdk is a small typescript library that can be used by iframe Apps to communicate with DSCVR's tapestry hosts.
+tapestry-client-sdkxx is a small typescript library that can be used by iframe Apps to communicate with DSCVR's tapestry hosts.
 
 The library provides a `TapestryClient` class with methods to establish communication with DSCVR to get the current context (user and content) as well as to execute wallet transactions.
 

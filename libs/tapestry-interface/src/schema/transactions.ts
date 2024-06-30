@@ -26,6 +26,7 @@ export const ConnectWalletResponseMessageSchema = createHostMessageSchema(
 export const SignTransactionRequestMessageSchema = createClientMessageSchema(
   'sign-transaction-request',
   zod.object({
+    chainId: zod.string(),
     unsignedTx: zod.string(),
   }),
 );

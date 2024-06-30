@@ -28,7 +28,7 @@
     "rpc"
   ],
   "dependencies": {
-    "@dscvr-one/tapestry-interface": "file:dscvr-one-tapestry-interface-0.0.1.tgz",
+    "@dscvr-one/tapestry-interface": "workspace:*",
     "eventemitter3": "^5.0.1"
   },
   "license": "MIT",
@@ -46,5 +46,11 @@
     "ts-node": "^10.9.2",
     "tsup": "^8.0.2",
     "typescript": "^5.3.3"
+  },
+  "exports": {
+    ".": [
+      "./dist/index.js",
+      "./src/index.ts"
+    ]
   }
 }

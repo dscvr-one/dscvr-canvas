@@ -68,7 +68,7 @@ export class TapestryClient {
     return responsePromise;
   }
 
-  signTransaction(unsignedTx: string) {
+  signTransaction(chainId: string, unsignedTx: string) {
     const responsePromise =
       new Promise<TapestryInterface.Transactions.SignTransactionResponseMessage>(
         (resolve) => {
@@ -78,6 +78,7 @@ export class TapestryClient {
     this.sendMessage({
       type: 'sign-transaction-request',
       payload: {
+        chainId,
         unsignedTx,
       },
     });
@@ -102,7 +103,7 @@ export class TapestryClient {
     }
 
     const unsignedTx = await createTx(walletResponse);
-    return await this.signTransaction(unsignedTx);
+    return await this.signTransaction(chainId, unsignedTx);
   }
 
   private handleClose() {

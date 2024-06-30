@@ -5,7 +5,7 @@
     "target": "esnext",
     "lib": ["ESNext"],
     "moduleDetection": "force",
-    "moduleResolution": "node",
+    "moduleResolution": "Bundler",
     "outDir": "dist",
     "skipLibCheck": true,
     "esModuleInterop": true

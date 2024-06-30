@@ -13,8 +13,8 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "@dscvr-one/tapestry-client-sdk": "file:dscvr-one-tapestry-client-sdk-0.0.1.tgz",
-    "@dscvr-one/tapestry-interface": "file:dscvr-one-tapestry-interface-0.0.1.tgz",
+    "@dscvr-one/tapestry-client-sdk": "workspace:*",
+    "@dscvr-one/tapestry-interface": "workspace:*",
     "vue": "^3.4.29"
   },
   "devDependencies": {

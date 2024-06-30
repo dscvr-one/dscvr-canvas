@@ -1,87 +1,92 @@
-# frames-adapter
+# @dscvr-one/tapestry-client-sdk
 
-frames-adapter is a small typescript library that can be used as an adapter to DSCVR's protocol from different frames frameworks.
+tapestry-client-sdk is a small typescript library that can be used by iframe Apps to communicate with DSCVR's tapestry hosts.
 
-The library provides a couple of helper methods to validate the trusted message data of a frame action and also to determine if a frame is using the DSCVR protocol.
+The library provides a `TapestryClient` class with methods to establish communication with DSCVR to get the current context (user and content) as well as to execute wallet transactions.
 
 ## Installation
 
 You can install Frames Adapter via npm:
 
 ```bash
-npm install @dscvr-one/frames-adapter
+npm install @dscvr-one/tapestry-client-sdk
 ```
 
 yarn
 
 ```bash
-yarn add @dscvr-one/frames-adapter
+yarn add @dscvr-one/tapestry-client-sdk
 ```
 
 ## Usage
 
-To use Frames Adapter, simply import it into your typescript project:
+To use the TapestryClient, simply import it into your typescript project:
 
 ```typescript
 import {
-  type DscvrFramesRequest,
-  type DscvrClientProtocol,
-  type DscvrFrameActionData,
-  validateClientProtocol,
-  validateFramesPost,
-} from '@dscvr-one/frames-adapter';
+  TapestryInterface,
+  TapestryClient,
+} from '@dscvr-one/tapestry-client-sdk';
 ```
 
-Then, you can use the functions provided by Frames Adapter to validate a Frame Post payload.
+Then, instantiate `TapestryClient`
+
+```typescript
+const tapestryClient = new TapestryClient();
+```
+
+Use `TapestryInterface` to access the communication messages types and schemas.
+
+```typescript
+const user: TapestryInterface.Handshake.User = response.untrusted.user;
+const content: TapestryInterface.Handshake.Content = response.untrusted.content;
+```
 
 ### Example
 
 ```typescript
 import {
-  type DscvrFramesRequest,
-  type DscvrClientProtocol,
-  type DscvrFrameActionData,
-  validateClientProtocol,
-  validateFramesPost,
-} from '@dscvr-one/frames-adapter';
+  TapestryInterface,
+  TapestryClient,
+} from '@dscvr-one/tapestry-client-sdk';
 
-export const isDscvrFrameActionPayload = (
-  frameActionPayload: FrameActionPayload,
-): frameActionPayload is DscvrFramesRequest => {
-  return (
-    !!frameActionPayload.clientProtocol &&
-    validateClientProtocol(frameActionPayload.clientProtocol)
-  );
+const tapestryClient = new TapestryClient();
+
+const startHandshake = async () => {
+  const response = await tapestryClient.ready();
+  // make sure to validate response.trustedBytes using @dscvr-one/tapestry-server-sdk so the app is not used by platforms other than DSCVR
+  if (response) {
+    const user: TapestryInterface.Handshake.User = response.untrusted.user;
+    const content: TapestryInterface.Handshake.Content =
+      response.untrusted.content;
+    // ...
+  }
 };
 
-export const getDscvrFrameMessage = async (
-  frameActionPayload: DscvrFramesRequest,
-) => {
-  const result = await validateFramesPost({
-    ...frameActionPayload,
-    clientProtocol: frameActionPayload.clientProtocol as DscvrClientProtocol,
-  });
-
-  return result;
+// Open an external link on DSCVR host
+const openLink = () => {
+  const url = 'https://...';
+  tapestryClient.openLink(url);
 };
-```
 
-Expected payload should have the next structure
+// Execute a wallet transaction
 
-```json
-{
-  "clientProtocol": "dscvr@...",
-  "untrustedData": {
-    "dscvrId": "...",
-    "contentId": 123,
-    "state": "...",
-    "url": "...",
-    "timestamp": 123,
-    "buttonIndex": 1,
-    "inputText": "..."
-  },
-  "trustedData": {
-    "messageBytes": "..."
+const createTx = async (response: TapestryInterface.Transactions.ConnectWalletResponseMessage) => {
+  // make sure to validate response.trustedBytes using @dscvr-one/tapestry-server-sdk so the app is not used by platforms other than DSCVR
+  const unsignedTx = // ...
+  return unsignedTx;
+}
+
+const sendTransaction = async () => {
+  const response = await tapestryClient.connectWalletAndSignTransaction(
+    'solana:101',
+    createTx
+  )
+  // make sure to validate response.trustedBytes using @dscvr-one/tapestry-server-sdk so the app is not used by platforms other than DSCVR
+  if (response?.untrusted.success) {
+    console.log('Transaction sent successfully', response.untrusted.signedTx)
+  } else {
+    console.log('Transaction failed', response)
   }
 }
 ```
@@ -95,11 +100,3 @@ _Note_:
 1. Please contribute using [GitHub Flow](https://web.archive.org/web/20191104103724/https://guides.github.com/introduction/flow/)
 2. Commits & PRs will be allowed only if the commit messages & PR titles follow the [conventional commit standard](https://www.conventionalcommits.org/), _read more about it [here](https://github.com/conventional-changelog/commitlint/tree/master/%40commitlint/config-conventional#type-enum)_
 3. PS. Ensure your commits are signed. _[Read why](https://withblue.ink/2020/05/17/how-and-why-to-sign-git-commits.html)_
-
-### Take in count
-
-- type `DscvrUntrustedData` in file **src/types.ts** should be a type with the `&&` operator and not an interface with extend, otherwise a [type predicate](https://www.typescriptlang.org/docs/handbook/2/narrowing.html#using-type-predicates) wont work e.g:
-
-```typescript
-const fn = (payload: T): payload is DscvrFramesRequest
-```

@@ -13,7 +13,7 @@ import {
   SignTransactionResponseMessageSchema,
 } from './transactions';
 
-import { OpenLnkRequestMessageSchema } from './link';
+import { OpenLnkRequestMessageSchema } from './ui';
 
 export const ClientMessageSchema = zod.union([
   InitRequestMessageSchema,

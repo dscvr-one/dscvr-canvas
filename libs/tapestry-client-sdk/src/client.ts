@@ -43,6 +43,9 @@ export class TapestryClient {
     }
   }
 
+  // TODO: show toast message
+  // TODO: show confirmation dialog
+  // TODO: set PFP ...
   openLink(url: string) {
     this.sendMessage({
       type: 'open-link-request',
@@ -91,8 +94,10 @@ export class TapestryClient {
     chainId: string,
     createTx: (
       connectResponse: TapestryInterface.Transactions.ConnectWalletResponseMessage,
-    ) => Promise<string>,
-  ): Promise<TapestryInterface.Transactions.SignTransactionResponseMessage> {
+    ) => Promise<string | undefined>,
+  ): Promise<
+    TapestryInterface.Transactions.SignTransactionResponseMessage | undefined
+  > {
     const walletResponse = await this.connectWallet(chainId);
     if (!walletResponse.untrusted.success) {
       return {
@@ -105,6 +110,9 @@ export class TapestryClient {
     }
 
     const unsignedTx = await createTx(walletResponse);
+    if (!unsignedTx) {
+      return;
+    }
     return await this.signTransaction(chainId, unsignedTx);
   }
 
@@ -131,14 +139,14 @@ export class TapestryClient {
   private handleReceiveMessage = (
     event: MessageEvent<TapestryInterface.HostMessage>,
   ) => {
-    console.log('TapestryClient: handleReceiveMessage', event);
     const messageData = event.data;
 
     const parsedMessage =
       TapestryInterface.HostMessageSchema.safeParse(messageData);
     if (!parsedMessage.success) {
-      throw new Error('TapestryClient: Invalid message object');
+      return;
     }
+    console.log('TapestryClient: handleReceiveMessage', parsedMessage);
 
     const message = parsedMessage.data;
 

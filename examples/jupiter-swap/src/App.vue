@@ -1,16 +1,13 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { TapestryInterface, TapestryClient } from '@dscvr-one/tapestry-client-sdk'
-import UserInfo from './components/UserInfo.vue'
-import ContentInfo from './components/ContentInfo.vue'
+import SwapForm from './components/SwapForm.vue'
 
-const started = ref(false)
 const user = ref<TapestryInterface.Handshake.User>()
 const content = ref<TapestryInterface.Handshake.Content>()
 const tapestryClient = ref<TapestryClient>()
 
 const startHandshake = async () => {
-  started.value = true
   if (!tapestryClient.value) return
   const response = await tapestryClient.value.ready()
   // TODO: validate response.trustedBytes
@@ -20,25 +17,27 @@ const startHandshake = async () => {
   }
 }
 
-const openLink = () => {
+const openTransactionLink = (signedTx: string) => {
   if (!tapestryClient.value) return
-  const url = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+  const url = `https://solana.fm/tx/${signedTx}`
   tapestryClient.value.openLink(url)
 }
 
 onMounted(async () => {
   tapestryClient.value = new TapestryClient()
+  await startHandshake()
 })
 </script>
 
 <template>
-  <div>
-    <button v-if="!started && !tapestryClient?.isReady" @click="startHandshake">
-      Init Handshake
-    </button>
-    <button v-if="started && tapestryClient?.isReady" @click="openLink">Open external link</button>
-    <p v-if="started && !tapestryClient?.isReady" class="text-center">Loading...</p>
-    <user-info v-if="user" :user="user" />
-    <content-info v-if="content" :content="content" />
+  <p v-if="!tapestryClient?.isReady" :style="{ 'text-align': 'center' }">Loading...</p>
+  <div v-if="user">
+    <h1 v-if="user">Welcome {{ user.username }}</h1>
+    <swap-form
+      v-if="tapestryClient"
+      :tapestryClient="tapestryClient"
+      @success="openTransactionLink"
+    />
   </div>
+  <div v-else>You must be logged in to swap</div>
 </template>

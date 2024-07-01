@@ -57,8 +57,7 @@ const startHandshake = async () => {
   // make sure to validate response.trustedBytes using @dscvr-one/tapestry-server-sdk so the app is not used by platforms other than DSCVR
   if (response) {
     const user: TapestryInterface.Handshake.User = response.untrusted.user;
-    const content: TapestryInterface.Handshake.Content =
-      response.untrusted.content;
+    const content: TapestryInterface.Handshake.Content = response.untrusted.content;
     // ...
   }
 };
@@ -70,8 +69,11 @@ const openLink = () => {
 };
 
 // Execute a wallet transaction
-
 const createTx = async (response: TapestryInterface.Transactions.ConnectWalletResponseMessage) => {
+  if (!response.success) {
+    console.error('Failed to connect wallet')
+    return
+  }
   // make sure to validate response.trustedBytes using @dscvr-one/tapestry-server-sdk so the app is not used by platforms other than DSCVR
   const unsignedTx = // ...
   return unsignedTx;
@@ -81,12 +83,17 @@ const sendTransaction = async () => {
   const response = await tapestryClient.connectWalletAndSignTransaction(
     'solana:101',
     createTx
-  )
+  );
+  if (!response) {
+    console.error('Transaction not created');
+    return;
+  }
   // make sure to validate response.trustedBytes using @dscvr-one/tapestry-server-sdk so the app is not used by platforms other than DSCVR
-  if (response?.untrusted.success) {
-    console.log('Transaction sent successfully', response.untrusted.signedTx)
+  if (response.untrusted.success) {
+    const signedTx = response.untrusted.signedTx;
+    // ....
   } else {
-    console.log('Transaction failed', response)
+    console.error('Transaction failed', response);
   }
 }
 ```

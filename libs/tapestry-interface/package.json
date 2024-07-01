@@ -47,8 +47,8 @@
   },
   "exports": {
     ".": [
-      "./dist/index.js",
-      "./src/index.ts"
+      "./src/index.ts",
+      "./dist/index.js"
     ]
   }
 }

@@ -1,6 +1,6 @@
-# getting-started
+# jupiter-swap
 
-This template should help get you started doing a simple handshake with DSCVR tapestry iframes.
+This template should help get you started using transactions with DSCVR tapestry iframes.
 
 ## Recommended IDE Setup
 

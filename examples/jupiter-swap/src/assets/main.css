@@ -1,3 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+  min-height: 100vh;
+  display: flex;
+  place-items: center;
+  background-color: #181818;
+  color: white;
+}
+
+#app {
+  margin: 0 auto;
+}

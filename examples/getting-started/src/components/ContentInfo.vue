@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { TapestryInterface } from '@dscvr-one/tapestry-client-sdk'
 defineProps<{
-  content: TapestryInterface.Handshake.Content
+  content: TapestryInterface.Lifecycle.Content
 }>()
 </script>
 

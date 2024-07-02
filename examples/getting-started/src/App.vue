@@ -5,8 +5,8 @@ import UserInfo from './components/UserInfo.vue'
 import ContentInfo from './components/ContentInfo.vue'
 
 const started = ref(false)
-const user = ref<TapestryInterface.Handshake.User>()
-const content = ref<TapestryInterface.Handshake.Content>()
+const user = ref<TapestryInterface.Lifecycle.User>()
+const content = ref<TapestryInterface.Lifecycle.Content>()
 const tapestryClient = ref<TapestryClient>()
 
 const startHandshake = async () => {

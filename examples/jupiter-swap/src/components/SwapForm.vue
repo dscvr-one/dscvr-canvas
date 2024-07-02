@@ -21,7 +21,7 @@ const tokens = ref<Token[]>([])
 const errorMessage = ref<string>()
 const success = ref<boolean>()
 
-const createTx = async (response: TapestryInterface.Transactions.ConnectWalletResponseMessage) => {
+const createTx = async (response: TapestryInterface.User.ConnectWalletResponseMessage) => {
   // TODO: validate response.trustedBytes
   if (!response.untrusted.success) {
     errorMessage.value = 'Failed to connect wallet'

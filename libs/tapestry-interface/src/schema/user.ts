@@ -46,6 +46,13 @@ export const SignTransactionResponseMessageSchema = createHostMessageSchema(
   ]),
 );
 
+export const OpenLnkRequestMessageSchema = createClientMessageSchema(
+  'user:open-link-request',
+  zod.object({
+    url: zod.string(),
+  }),
+);
+
 export interface ConnectWalletRequestMessage
   extends zod.infer<typeof ConnectWalletRequestMessageSchema> {}
 export interface ConnectWalletResponseMessage
@@ -54,3 +61,5 @@ export interface SignTransactionRequestMessage
   extends zod.infer<typeof SignTransactionRequestMessageSchema> {}
 export interface SignTransactionResponseMessage
   extends zod.infer<typeof SignTransactionResponseMessageSchema> {}
+export interface OpenLnkRequestMessage
+  extends zod.infer<typeof OpenLnkRequestMessageSchema> {}

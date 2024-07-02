@@ -69,7 +69,7 @@ const openLink = () => {
 };
 
 // Execute a wallet transaction
-const createTx = async (response: TapestryInterface.Transactions.ConnectWalletResponseMessage) => {
+const createTx = async (response: TapestryInterface.User.ConnectWalletResponseMessage) => {
   if (!response.success) {
     console.error('Failed to connect wallet')
     return

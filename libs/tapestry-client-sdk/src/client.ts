@@ -3,7 +3,7 @@ import * as TapestryInterface from '@dscvr-one/tapestry-interface';
 
 export class TapestryClient {
   private sourceOrigin = '*';
-  private initResponseMessage: TapestryInterface.Handshake.InitResponseMessage | null =
+  private initResponseMessage: TapestryInterface.Lifecycle.InitResponseMessage | null =
     null;
   private eventBus = new EventEmitter<
     TapestryInterface.HostMessageType,
@@ -36,7 +36,7 @@ export class TapestryClient {
       return this.initResponseMessage;
     } else {
       this.sendHandshake();
-      return await new Promise<TapestryInterface.Handshake.InitResponseMessage>(
+      return await new Promise<TapestryInterface.Lifecycle.InitResponseMessage>(
         (resolve) => {
           this.eventBus.once('lifecycle:init-response', resolve);
         },
@@ -58,9 +58,9 @@ export class TapestryClient {
 
   connectWallet(
     chainId: string,
-  ): Promise<TapestryInterface.Transactions.ConnectWalletResponseMessage> {
+  ): Promise<TapestryInterface.User.ConnectWalletResponseMessage> {
     const responsePromise =
-      new Promise<TapestryInterface.Transactions.ConnectWalletResponseMessage>(
+      new Promise<TapestryInterface.User.ConnectWalletResponseMessage>(
         (resolve) => {
           this.eventBus.once('user:connect-wallet-response', resolve);
         },
@@ -76,7 +76,7 @@ export class TapestryClient {
 
   signTransaction(chainId: string, unsignedTx: string) {
     const responsePromise =
-      new Promise<TapestryInterface.Transactions.SignTransactionResponseMessage>(
+      new Promise<TapestryInterface.User.SignTransactionResponseMessage>(
         (resolve) => {
           this.eventBus.once('user:sign-transaction-response', resolve);
         },
@@ -94,10 +94,10 @@ export class TapestryClient {
   async connectWalletAndSignTransaction(
     chainId: string,
     createTx: (
-      connectResponse: TapestryInterface.Transactions.ConnectWalletResponseMessage,
+      connectResponse: TapestryInterface.User.ConnectWalletResponseMessage,
     ) => Promise<string | undefined>,
   ): Promise<
-    TapestryInterface.Transactions.SignTransactionResponseMessage | undefined
+    TapestryInterface.User.SignTransactionResponseMessage | undefined
   > {
     const walletResponse = await this.connectWallet(chainId);
     if (!walletResponse.untrusted.success) {
@@ -117,17 +117,11 @@ export class TapestryClient {
     return await this.signTransaction(chainId, unsignedTx);
   }
 
-  private handleClose() {
-    this.initResponseMessage = null;
-    console.log('Client: shutdown');
-  }
-
   private sendHandshake() {
     this.sendMessage({
       type: 'lifecycle:init-request',
       payload: {
-        version: '0.0.1', // TODO
-        // TODO: instanceId: '123',
+        version: TapestryInterface.VERSION,
       },
     });
   }
@@ -158,8 +152,6 @@ export class TapestryClient {
       this.initResponseMessage = message;
     } else if (!this.initResponseMessage) {
       throw new Error('TapestryClient: Client is not ready');
-    } else if (message.type === 'lifecycle:close') {
-      this.handleClose();
     }
 
     this.eventBus.emit(message.type, message);

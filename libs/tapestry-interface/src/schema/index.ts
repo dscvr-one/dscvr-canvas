@@ -4,16 +4,15 @@ import {
   CloseMessageSchema,
   InitRequestMessageSchema,
   InitResponseMessageSchema,
-} from './handshake';
+} from './lifecycle';
 
 import {
   ConnectWalletRequestMessageSchema,
   ConnectWalletResponseMessageSchema,
   SignTransactionRequestMessageSchema,
   SignTransactionResponseMessageSchema,
-} from './transactions';
-
-import { OpenLnkRequestMessageSchema } from './ui';
+  OpenLnkRequestMessageSchema,
+} from './user';
 
 export const ClientMessageSchema = zod.union([
   InitRequestMessageSchema,

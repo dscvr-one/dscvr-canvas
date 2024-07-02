@@ -17,7 +17,6 @@ export const InitRequestMessageSchema = createClientMessageSchema(
   'lifecycle:init-request',
   zod.object({
     version: zod.string(),
-    // TODO: more
   }),
 );
 

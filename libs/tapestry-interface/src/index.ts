@@ -1,6 +1,5 @@
-export * as Handshake from './schema/handshake';
-export * as UI from './schema/ui';
-export * as Transactions from './schema/transactions';
+export * as Lifecycle from './schema/lifecycle';
+export * as User from './schema/user';
 export {
   ClientMessageSchema,
   HostMessageSchema,
@@ -9,3 +8,5 @@ export {
   type HostMessage,
   type HostMessageType,
 } from './schema';
+
+export const VERSION = 'vNext';

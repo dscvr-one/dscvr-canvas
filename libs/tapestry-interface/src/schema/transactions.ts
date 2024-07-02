@@ -2,14 +2,14 @@ import * as zod from 'zod';
 import { createClientMessageSchema, createHostMessageSchema } from './base';
 
 export const ConnectWalletRequestMessageSchema = createClientMessageSchema(
-  'connect-wallet-request',
+  'user:connect-wallet-request',
   zod.object({
     chainId: zod.string(),
   }),
 );
 
 export const ConnectWalletResponseMessageSchema = createHostMessageSchema(
-  'connect-wallet-response',
+  'user:connect-wallet-response',
   zod.union([
     zod.object({
       success: zod.literal(true),
@@ -24,7 +24,7 @@ export const ConnectWalletResponseMessageSchema = createHostMessageSchema(
 );
 
 export const SignTransactionRequestMessageSchema = createClientMessageSchema(
-  'sign-transaction-request',
+  'user:sign-transaction-request',
   zod.object({
     chainId: zod.string(),
     unsignedTx: zod.string(),
@@ -32,7 +32,7 @@ export const SignTransactionRequestMessageSchema = createClientMessageSchema(
 );
 
 export const SignTransactionResponseMessageSchema = createHostMessageSchema(
-  'sign-transaction-response',
+  'user:sign-transaction-response',
   zod.union([
     zod.object({
       success: zod.literal(true),

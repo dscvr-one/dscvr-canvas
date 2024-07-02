@@ -2,7 +2,7 @@ import * as zod from 'zod';
 import { createClientMessageSchema } from './base';
 
 export const OpenLnkRequestMessageSchema = createClientMessageSchema(
-  'open-link-request',
+  'user:open-link-request',
   zod.object({
     url: zod.string(),
   }),

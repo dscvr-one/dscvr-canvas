@@ -14,7 +14,8 @@ export class TapestryClient {
     if (typeof window === 'undefined') {
       throw new Error('TapestryClient: window is not defined');
     }
-    // TODO: destructor to remove event listeners
+    // We don't remove the event listener, because it should get removed when the
+    // iframe is removed from the DOM.
     window.addEventListener('message', this.handleReceiveMessage);
 
     if (document.referrer) {
@@ -29,7 +30,7 @@ export class TapestryClient {
 
   async ready(onClose?: () => void) {
     if (onClose) {
-      this.eventBus.on('close', onClose);
+      this.eventBus.on('lifecycle:close', onClose);
     }
     if (this.initResponseMessage) {
       return this.initResponseMessage;
@@ -37,7 +38,7 @@ export class TapestryClient {
       this.sendHandshake();
       return await new Promise<TapestryInterface.Handshake.InitResponseMessage>(
         (resolve) => {
-          this.eventBus.once('init-response', resolve);
+          this.eventBus.once('lifecycle:init-response', resolve);
         },
       );
     }
@@ -48,7 +49,7 @@ export class TapestryClient {
   // TODO: set PFP ...
   openLink(url: string) {
     this.sendMessage({
-      type: 'open-link-request',
+      type: 'user:open-link-request',
       payload: {
         url,
       },
@@ -61,11 +62,11 @@ export class TapestryClient {
     const responsePromise =
       new Promise<TapestryInterface.Transactions.ConnectWalletResponseMessage>(
         (resolve) => {
-          this.eventBus.once('connect-wallet-response', resolve);
+          this.eventBus.once('user:connect-wallet-response', resolve);
         },
       );
     this.sendMessage({
-      type: 'connect-wallet-request',
+      type: 'user:connect-wallet-request',
       payload: {
         chainId,
       },
@@ -77,11 +78,11 @@ export class TapestryClient {
     const responsePromise =
       new Promise<TapestryInterface.Transactions.SignTransactionResponseMessage>(
         (resolve) => {
-          this.eventBus.once('sign-transaction-response', resolve);
+          this.eventBus.once('user:sign-transaction-response', resolve);
         },
       );
     this.sendMessage({
-      type: 'sign-transaction-request',
+      type: 'user:sign-transaction-request',
       payload: {
         chainId,
         unsignedTx,
@@ -105,7 +106,7 @@ export class TapestryClient {
         untrusted: {
           ...walletResponse.untrusted,
         },
-        type: 'sign-transaction-response',
+        type: 'user:sign-transaction-response',
       };
     }
 
@@ -123,7 +124,7 @@ export class TapestryClient {
 
   private sendHandshake() {
     this.sendMessage({
-      type: 'init-request',
+      type: 'lifecycle:init-request',
       payload: {
         version: '0.0.1', // TODO
         // TODO: instanceId: '123',
@@ -150,14 +151,14 @@ export class TapestryClient {
 
     const message = parsedMessage.data;
 
-    if (message.type === 'init-response') {
+    if (message.type === 'lifecycle:init-response') {
       if (this.initResponseMessage) {
         throw new Error('TapestryClient: Client is already marked as ready');
       }
       this.initResponseMessage = message;
     } else if (!this.initResponseMessage) {
       throw new Error('TapestryClient: Client is not ready');
-    } else if (message.type === 'close') {
+    } else if (message.type === 'lifecycle:close') {
       this.handleClose();
     }
 

@@ -14,7 +14,7 @@ export const ContentSchema = zod.object({
 });
 
 export const InitRequestMessageSchema = createClientMessageSchema(
-  'init-request',
+  'lifecycle:init-request',
   zod.object({
     version: zod.string(),
     // TODO: more
@@ -22,7 +22,7 @@ export const InitRequestMessageSchema = createClientMessageSchema(
 );
 
 export const InitResponseMessageSchema = createHostMessageSchema(
-  'init-response',
+  'lifecycle:init-response',
   zod.object({
     user: UserSchema.optional(),
     content: ContentSchema.optional(),
@@ -31,7 +31,7 @@ export const InitResponseMessageSchema = createHostMessageSchema(
 
 // TODO: untrusted data on empty message?
 export const CloseMessageSchema = createHostMessageSchema(
-  'close',
+  'lifecycle:close',
   zod.undefined(),
 );
 

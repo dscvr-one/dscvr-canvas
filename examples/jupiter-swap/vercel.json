@@ -1,0 +1,13 @@
+{
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "script-src https://terminal.jup.ag; style-src https://terminal.jup.ag; connect-src https://jup.ag https://*.jup.ag; img-src https://jup.ag https://*.jup.ag https://raw.githubusercontent.com https://*.ipfs.nftstorage.link; "
+        }
+      ]
+    }
+  ]
+}

@@ -1,33 +1,33 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue'
-import * as bs58 from 'bs58'
-import { PublicKey } from '@solana/web3.js'
-import { CanvasInterface, CanvasClient } from '@dscvr-one/canvas-client-sdk'
-import type { WalletContextState } from '@jup-ag/wallet-adapter'
-import { createTXFromInstructions, jupiterRpcEndpoint } from './api/jupiter'
-import { validateHostMessage } from './api/dscvr'
+import { onMounted, onUnmounted, ref } from 'vue';
+import * as bs58 from 'bs58';
+import { PublicKey } from '@solana/web3.js';
+import { CanvasInterface, CanvasClient } from '@dscvr-one/canvas-client-sdk';
+import type { WalletContextState } from '@jup-ag/wallet-adapter';
+import { createTXFromInstructions, jupiterRpcEndpoint } from './api/jupiter';
+import { validateHostMessage } from './api/dscvr';
 
-const chainId = 'solana:101'
-let canvasClient: CanvasClient | undefined
-const isReady = ref(false)
-const jupiterPlaceholderRef = ref<HTMLDivElement>()
-const user = ref<CanvasInterface.Lifecycle.User>()
-const content = ref<CanvasInterface.Lifecycle.Content>()
+const chainId = 'solana:101';
+let canvasClient: CanvasClient | undefined;
+const isReady = ref(false);
+const jupiterPlaceholderRef = ref<HTMLDivElement>();
+const user = ref<CanvasInterface.Lifecycle.User>();
+const content = ref<CanvasInterface.Lifecycle.Content>();
 
 const initJupiterWidget = () => {
-  if (!jupiterPlaceholderRef.value || !canvasClient) return
-  let currentWalletPublicKey: PublicKey | undefined = undefined
+  if (!jupiterPlaceholderRef.value || !canvasClient) return;
+  let currentWalletPublicKey: PublicKey | undefined = undefined;
   window.Jupiter.init({
     displayMode: 'integrated',
     integratedTargetId: 'jupiter-widget',
     endpoint: jupiterRpcEndpoint,
     enableWalletPassthrough: true,
     onRequestConnectWallet: async () => {
-      const response = await canvasClient?.connectWallet(chainId)
+      const response = await canvasClient?.connectWallet(chainId);
       if (!response?.untrusted.success) {
-        throw new Error('Failed to connect wallet')
+        throw new Error('Failed to connect wallet');
       }
-      currentWalletPublicKey = new PublicKey(response.untrusted.address)
+      currentWalletPublicKey = new PublicKey(response.untrusted.address);
       const passthroughWalletContextState = {
         publicKey: currentWalletPublicKey,
         connected: true,
@@ -38,26 +38,26 @@ const initJupiterWidget = () => {
             publicKey: currentWalletPublicKey
           }
         }
-      } as WalletContextState
-      window.Jupiter.syncProps({ passthroughWalletContextState })
+      } as WalletContextState;
+      window.Jupiter.syncProps({ passthroughWalletContextState });
     },
     onRequestIxCallback: async (payload) => {
       if (!currentWalletPublicKey) {
-        console.error('no wallet currentWalletPublicKey is selected')
-        return
+        console.error('no wallet currentWalletPublicKey is selected');
+        return;
       }
-      const versionedTransaction = await createTXFromInstructions(currentWalletPublicKey, payload)
-      const unsignedTx = bs58.encode(versionedTransaction.serialize())
+      const versionedTransaction = await createTXFromInstructions(currentWalletPublicKey, payload);
+      const unsignedTx = bs58.encode(versionedTransaction.serialize());
 
       const signedTx = await canvasClient!.signAndSendTransaction({
         chainId,
         unsignedTx
-      })
+      });
       if (!signedTx.untrusted.success) {
         payload.onSubmitWithIx({
           error: new Error('User cancelled transaction signing.')
-        })
-        return
+        });
+        return;
       }
       payload.onSubmitWithIx({
         txid: signedTx.untrusted.signedTx,
@@ -65,36 +65,36 @@ const initJupiterWidget = () => {
         outputAddress: payload.meta.destinationAddress,
         inputAmount: Number(payload.meta.quoteResponseMeta.quoteResponse.inAmount[0]),
         outputAmount: Number(payload.meta.quoteResponseMeta.quoteResponse.outAmount[0])
-      })
+      });
     },
     onSuccess: (payload) => {}
-  })
-}
+  });
+};
 
 const start = async () => {
-  if (!canvasClient) return
-  const response = await canvasClient.ready()
-  isReady.value = canvasClient.isReady
-  const isValidResponse = await validateHostMessage(response)
-  if (!isValidResponse) return
+  if (!canvasClient) return;
+  const response = await canvasClient.ready();
+  isReady.value = canvasClient.isReady;
+  const isValidResponse = await validateHostMessage(response);
+  if (!isValidResponse) return;
   if (response) {
-    response.trustedBytes
-    user.value = response.untrusted.user
-    content.value = response.untrusted.content
+    response.trustedBytes;
+    user.value = response.untrusted.user;
+    content.value = response.untrusted.content;
   }
-  initJupiterWidget()
-}
+  initJupiterWidget();
+};
 
 onMounted(() => {
-  canvasClient = new CanvasClient()
-  start()
-})
+  canvasClient = new CanvasClient();
+  start();
+});
 
 onUnmounted(() => {
   if (canvasClient) {
-    canvasClient.destroy()
+    canvasClient.destroy();
   }
-})
+});
 </script>
 
 <template>

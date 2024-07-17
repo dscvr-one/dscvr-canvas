@@ -5,24 +5,24 @@ import {
   TransactionInstruction,
   AddressLookupTableAccount,
   TransactionMessage
-} from '@solana/web3.js'
-import { Buffer } from 'buffer'
-import type { IOnRequestIxCallback } from '@/jupiter-terminal'
+} from '@solana/web3.js';
+import { Buffer } from 'buffer';
+import type { IOnRequestIxCallback } from '@/jupiter-terminal';
 
-export const jupiterRpcEndpoint = 'https://julieta-jciq77-fast-mainnet.helius-rpc.com'
+export const jupiterRpcEndpoint = 'https://julieta-jciq77-fast-mainnet.helius-rpc.com';
 
 export const createTXFromInstructions = async (
   walletPublicKey: PublicKey,
   ixAndCb: IOnRequestIxCallback
 ) => {
-  const { instructions } = ixAndCb
-  const connection = new Connection(jupiterRpcEndpoint)
+  const { instructions } = ixAndCb;
+  const connection = new Connection(jupiterRpcEndpoint);
   const {
     setupInstructions, // Setup missing ATA for the users.
     swapInstruction: swapInstructionPayload, // The actual swap instruction.
     cleanupInstruction, // Unwrap the SOL if `wrapAndUnwrapSol = true`.
     addressLookupTableAddresses // The lookup table addresses that you can use if you are using versioned transaction.
-  } = instructions
+  } = instructions;
 
   const deserializeInstruction = (instruction: (typeof instructions)['swapInstruction']) => {
     return new TransactionInstruction({
@@ -33,36 +33,36 @@ export const createTXFromInstructions = async (
         isWritable: key.isWritable
       })),
       data: Buffer.from(instruction.data, 'base64')
-    })
-  }
+    });
+  };
 
   const getAddressLookupTableAccounts = async (
     keys: string[]
   ): Promise<AddressLookupTableAccount[]> => {
     const addressLookupTableAccountInfos = await connection.getMultipleAccountsInfo(
       keys.map((key) => new PublicKey(key))
-    )
+    );
 
     return addressLookupTableAccountInfos.reduce((acc, accountInfo, index) => {
-      const addressLookupTableAddress = keys[index]
+      const addressLookupTableAddress = keys[index];
       if (accountInfo) {
         const addressLookupTableAccount = new AddressLookupTableAccount({
           key: new PublicKey(addressLookupTableAddress),
           state: AddressLookupTableAccount.deserialize(accountInfo.data)
-        })
-        acc.push(addressLookupTableAccount)
+        });
+        acc.push(addressLookupTableAccount);
       }
 
-      return acc
-    }, new Array<AddressLookupTableAccount>())
-  }
+      return acc;
+    }, new Array<AddressLookupTableAccount>());
+  };
 
-  const addressLookupTableAccounts: AddressLookupTableAccount[] = []
+  const addressLookupTableAccounts: AddressLookupTableAccount[] = [];
   addressLookupTableAccounts.push(
     ...(await getAddressLookupTableAccounts(addressLookupTableAddresses))
-  )
+  );
 
-  const { blockhash } = await connection.getLatestBlockhash()
+  const { blockhash } = await connection.getLatestBlockhash();
   const messageV0 = new TransactionMessage({
     payerKey: new PublicKey(walletPublicKey),
     recentBlockhash: blockhash,
@@ -71,7 +71,7 @@ export const createTXFromInstructions = async (
       deserializeInstruction(swapInstructionPayload),
       cleanupInstruction ? deserializeInstruction(cleanupInstruction) : null
     ].filter(Boolean) as TransactionInstruction[]
-  }).compileToV0Message(addressLookupTableAccounts)
+  }).compileToV0Message(addressLookupTableAccounts);
 
-  return new VersionedTransaction(messageV0)
-}
+  return new VersionedTransaction(messageV0);
+};

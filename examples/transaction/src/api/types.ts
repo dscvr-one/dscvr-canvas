@@ -1,1 +1,1 @@
-export type TokenType = 'SOL' | 'WIF'
+export type TokenType = 'SOL' | 'WIF';

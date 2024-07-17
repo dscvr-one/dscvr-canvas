@@ -1,26 +1,26 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import type { CanvasClient, CanvasInterface } from '@dscvr-one/canvas-client-sdk'
-import * as bs58 from 'bs58'
-import { createSendSolTransaction } from '../api/solana'
-import type { TokenType } from '../api/types'
-import { PublicKey, type Cluster } from '@solana/web3.js'
-import { validateHostMessage } from '@/api/dscvr'
+import { ref } from 'vue';
+import type { CanvasClient, CanvasInterface } from '@dscvr-one/canvas-client-sdk';
+import * as bs58 from 'bs58';
+import { createSendSolTransaction } from '../api/solana';
+import type { TokenType } from '../api/types';
+import { PublicKey, type Cluster } from '@solana/web3.js';
+import { validateHostMessage } from '@/api/dscvr';
 
 type ClusterInfo = {
-  name: string
-  cluster: Cluster
-  chainId: string
-  appUrl?: string
-}
+  name: string;
+  cluster: Cluster;
+  chainId: string;
+  appUrl?: string;
+};
 
 const props = defineProps<{
-  canvasClient: CanvasClient
-}>()
+  canvasClient: CanvasClient;
+}>();
 
 const emit = defineEmits<{
-  (e: 'success', signedTx: string): void
-}>()
+  (e: 'success', signedTx: string): void;
+}>();
 
 const clusterList: ClusterInfo[] = [
   { name: 'Devnet', cluster: 'devnet', chainId: 'solana:103' },
@@ -30,102 +30,102 @@ const clusterList: ClusterInfo[] = [
     chainId: 'solana:101',
     appUrl: import.meta.env.VITE_SOLANA_MAINNET_CLUSTER
   }
-]
-const clusterInfo = ref<ClusterInfo>(clusterList[0])
-const sourceAddress = ref<string>()
-const targetAddress = ref<string>()
-const amount = ref<number>()
-const token = ref<TokenType>('SOL')
-const errorMessage = ref<string>()
-const successfulSignedTx = ref<string>()
+];
+const clusterInfo = ref<ClusterInfo>(clusterList[0]);
+const sourceAddress = ref<string>();
+const targetAddress = ref<string>();
+const amount = ref<number>();
+const token = ref<TokenType>('SOL');
+const errorMessage = ref<string>();
+const successfulSignedTx = ref<string>();
 
 const openTransactionLink = () => {
-  if (!successfulSignedTx.value) return
-  const url = `https://solana.fm/tx/${successfulSignedTx.value}`
-  props.canvasClient.openLink(url)
-}
+  if (!successfulSignedTx.value) return;
+  const url = `https://solana.fm/tx/${successfulSignedTx.value}`;
+  props.canvasClient.openLink(url);
+};
 
 const createTx = async (
   response: CanvasInterface.User.ConnectWalletResponseMessage
 ): Promise<CanvasInterface.User.UnsignedTransaction | undefined> => {
-  const isValidResponse = await validateHostMessage(response)
+  const isValidResponse = await validateHostMessage(response);
   if (!isValidResponse) {
-    errorMessage.value = 'Security error'
-    return
+    errorMessage.value = 'Security error';
+    return;
   }
 
   if (!response.untrusted.success) {
-    errorMessage.value = 'Failed to connect wallet'
-    return
+    errorMessage.value = 'Failed to connect wallet';
+    return;
   }
   if (!targetAddress.value || !amount.value || !token.value) {
-    errorMessage.value = 'Please fill out all fields'
-    return
+    errorMessage.value = 'Please fill out all fields';
+    return;
   }
-  sourceAddress.value = response.untrusted.address
-  const sourceAddressPublicKey = new PublicKey(sourceAddress.value)
-  const targetAddressPublicKey = new PublicKey(targetAddress.value)
+  sourceAddress.value = response.untrusted.address;
+  const sourceAddressPublicKey = new PublicKey(sourceAddress.value);
+  const targetAddressPublicKey = new PublicKey(targetAddress.value);
   const transaction = await createSendSolTransaction(
     clusterInfo.value.cluster,
     amount.value,
     sourceAddressPublicKey,
     targetAddressPublicKey,
     clusterInfo.value.appUrl
-  )
+  );
 
   if (!transaction) {
-    errorMessage.value = 'Failed to create send transaction'
-    return
+    errorMessage.value = 'Failed to create send transaction';
+    return;
   }
 
-  const unsignedTx = bs58.encode(transaction.serialize())
+  const unsignedTx = bs58.encode(transaction.serialize());
 
   return {
     unsignedTx
-  }
-}
+  };
+};
 
 const sendTransaction = async () => {
   const response = await props.canvasClient.connectWalletAndSendTransaction(
     clusterInfo.value.chainId,
     createTx
-  )
+  );
 
   if (!response) {
-    errorMessage.value = 'Transaction not executed'
-    return
+    errorMessage.value = 'Transaction not executed';
+    return;
   }
 
-  const isValidResponse = await validateHostMessage(response)
+  const isValidResponse = await validateHostMessage(response);
   if (!isValidResponse) {
-    errorMessage.value = 'Security error'
-    return
+    errorMessage.value = 'Security error';
+    return;
   }
 
   if (response.untrusted.success) {
-    successfulSignedTx.value = response.untrusted.signedTx
-    emit('success', response.untrusted.signedTx)
+    successfulSignedTx.value = response.untrusted.signedTx;
+    emit('success', response.untrusted.signedTx);
   } else if (response.untrusted.errorReason === 'user-cancelled') {
-    errorMessage.value = 'User cancelled transaction'
+    errorMessage.value = 'User cancelled transaction';
   } else {
-    errorMessage.value = response?.untrusted.error
+    errorMessage.value = response?.untrusted.error;
   }
-}
+};
 
 const clear = () => {
-  errorMessage.value = ''
-  successfulSignedTx.value = undefined
-  sourceAddress.value = undefined
-  targetAddress.value = undefined
-  amount.value = undefined
-  clusterInfo.value = clusterList[0]
-}
+  errorMessage.value = '';
+  successfulSignedTx.value = undefined;
+  sourceAddress.value = undefined;
+  targetAddress.value = undefined;
+  amount.value = undefined;
+  clusterInfo.value = clusterList[0];
+};
 
 const submit = () => {
-  errorMessage.value = ''
-  successfulSignedTx.value = undefined
-  sendTransaction()
-}
+  errorMessage.value = '';
+  successfulSignedTx.value = undefined;
+  sendTransaction();
+};
 </script>
 
 <template>

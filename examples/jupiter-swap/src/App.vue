@@ -98,6 +98,6 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <p v-if="!isReady" :style="{ 'text-align': 'center' }">Loading...</p>
+  <p v-if="!isReady" class="text-center">Loading...</p>
   <div ref="jupiterPlaceholderRef" id="jupiter-widget" />
 </template>

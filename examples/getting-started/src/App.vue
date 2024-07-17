@@ -1,43 +1,43 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue'
-import { CanvasInterface, CanvasClient } from '@dscvr-one/canvas-client-sdk'
-import UserInfo from './components/UserInfo.vue'
-import ContentInfo from './components/ContentInfo.vue'
-import { validateHostMessage } from './api/dscvr'
+import { onMounted, onUnmounted, ref } from 'vue';
+import { CanvasInterface, CanvasClient } from '@dscvr-one/canvas-client-sdk';
+import UserInfo from './components/UserInfo.vue';
+import ContentInfo from './components/ContentInfo.vue';
+import { validateHostMessage } from './api/dscvr';
 
-let canvasClient: CanvasClient | undefined
-const isReady = ref(false)
-const user = ref<CanvasInterface.Lifecycle.User>()
-const content = ref<CanvasInterface.Lifecycle.Content>()
+let canvasClient: CanvasClient | undefined;
+const isReady = ref(false);
+const user = ref<CanvasInterface.Lifecycle.User>();
+const content = ref<CanvasInterface.Lifecycle.Content>();
 
 const start = async () => {
-  if (!canvasClient) return
-  const response = await canvasClient.ready()
-  const isValidResponse = await validateHostMessage(response)
-  if (!isValidResponse) return
-  isReady.value = canvasClient.isReady
+  if (!canvasClient) return;
+  const response = await canvasClient.ready();
+  const isValidResponse = await validateHostMessage(response);
+  if (!isValidResponse) return;
+  isReady.value = canvasClient.isReady;
   if (response) {
-    user.value = response.untrusted.user
-    content.value = response.untrusted.content
+    user.value = response.untrusted.user;
+    content.value = response.untrusted.content;
   }
-}
+};
 
 const openUserProfile = () => {
-  if (!canvasClient || !user.value) return
-  const url = `https://dscvr.one/u/${user.value.username}`
-  canvasClient.openLink(url)
-}
+  if (!canvasClient || !user.value) return;
+  const url = `https://dscvr.one/u/${user.value.username}`;
+  canvasClient.openLink(url);
+};
 
 onMounted(() => {
-  canvasClient = new CanvasClient()
-  start()
-})
+  canvasClient = new CanvasClient();
+  start();
+});
 
 onUnmounted(() => {
   if (canvasClient) {
-    canvasClient.destroy()
+    canvasClient.destroy();
   }
-})
+});
 </script>
 
 <template>

@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { CanvasInterface } from '@dscvr-one/canvas-client-sdk'
+import { CanvasInterface } from '@dscvr-one/canvas-client-sdk';
 defineProps<{
-  user: CanvasInterface.Lifecycle.User
-}>()
+  user: CanvasInterface.Lifecycle.User;
+}>();
 
 defineEmits<{
-  (e: 'open'): void
-}>()
+  (e: 'open'): void;
+}>();
 </script>
 
 <template>

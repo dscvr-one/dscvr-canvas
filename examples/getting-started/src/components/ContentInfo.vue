@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { CanvasInterface } from '@dscvr-one/canvas-client-sdk'
+import { CanvasInterface } from '@dscvr-one/canvas-client-sdk';
 defineProps<{
-  content: CanvasInterface.Lifecycle.Content
-}>()
+  content: CanvasInterface.Lifecycle.Content;
+}>();
 </script>
 
 <template>

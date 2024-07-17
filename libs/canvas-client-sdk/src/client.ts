@@ -3,8 +3,9 @@ import * as CanvasInterface from '@dscvr-one/canvas-interface';
 
 export class CanvasClient {
   private sourceOrigin: string;
-  private initResponseMessage: CanvasInterface.Lifecycle.InitResponseMessage | null =
-    null;
+  private initResponseMessage:
+    | CanvasInterface.Lifecycle.InitResponseMessage
+    | undefined = undefined;
   private eventBus = new EventEmitter<
     CanvasInterface.HostMessageType,
     CanvasInterface.HostMessage
@@ -23,11 +24,12 @@ export class CanvasClient {
   }
 
   destroy() {
+    this.initResponseMessage = undefined;
     window.removeEventListener('message', this.handleReceiveMessage);
   }
 
   get isReady() {
-    return this.initResponseMessage !== null;
+    return !!this.initResponseMessage;
   }
 
   async ready(onClose?: () => void) {

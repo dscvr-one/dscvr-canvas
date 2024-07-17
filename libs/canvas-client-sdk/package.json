@@ -1,0 +1,56 @@
+{
+  "name": "@dscvr-one/canvas-client-sdk",
+  "version": "1.0.2",
+  "description": "SDK for iframes apps to connect to dscvr host using postMessage rpc",
+  "type": "module",
+  "main": "src/index.ts",
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts"
+  },
+  "homepage": "https://github.com/dscvr-one/dscvr-canvas/libs/canvas-client-sdk#readme",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "doc": "typedoc",
+    "lint:js": "npm run lint:eslint && npm run lint:prettier",
+    "lint:eslint": "eslint \"{,!(node_modules|dist|static)/**/}*.{js,ts}\" --ignore-path .gitignore",
+    "lint:prettier": "prettier --check \"{,!(node_modules|dist|static)/**/}*.{js,ts}\" --ignore-path .gitignore",
+    "release": "shipjs prepare",
+    "release:dry": "shipjs prepare --dry-run",
+    "release:auto": "shipjs prepare --yes"
+  },
+  "keywords": [
+    "dscvr",
+    "canvas",
+    "frontend",
+    "client",
+    "typescript",
+    "sdk",
+    "rpc"
+  ],
+  "dependencies": {
+    "@dscvr-one/canvas-interface": "1.0.2",
+    "eventemitter3": "^5.0.1"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@commitlint/cli": "^19.1.0",
+    "@commitlint/config-conventional": "^19.1.0",
+    "@types/node": "^20",
+    "@typescript-eslint/eslint-plugin": "^7.3.1",
+    "@typescript-eslint/parser": "^7.3.1",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "lint-staged": "^15.2.2",
+    "shipjs": "0.26.3",
+    "ts-node": "^10.9.2",
+    "tsup": "^8.0.2",
+    "typedoc": "^0.26.3",
+    "typedoc-plugin-zod": "^1.2.0",
+    "typescript": "^5.3.3"
+  }
+}

@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  min-height: 100vh;
+  display: flex;
+  place-items: center;
+  background-color: #181818;
+  color: white;
+  margin: 0;
+  padding: 0;
+}
+
+#app {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}

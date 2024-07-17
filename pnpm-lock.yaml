@@ -36,7 +36,7 @@ importers:
   libs/canvas-client-sdk:
     dependencies:
       '@dscvr-one/canvas-interface':
-        specifier: 1.0.2
+        specifier: ^1.0.0
         version: link:../canvas-interface
       eventemitter3:
         specifier: ^5.0.1

@@ -1,6 +1,6 @@
 {
   "name": "@dscvr-one/canvas-interface",
-  "version": "1.0.2",
+  "version": "1.0.5",
   "description": "Types for iframes to interact with dscvr",
   "type": "module",
   "main": "src/index.ts",
@@ -8,7 +8,7 @@
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts"
   },
-  "homepage": "https://github.com/dscvr-one/dscvr-canvas/libs/canvas-interface#readme",
+  "homepage": "https://github.com/dscvr-one/dscvr-canvas/tree/main/libs/canvas-interface#readme",
   "files": [
     "dist"
   ],

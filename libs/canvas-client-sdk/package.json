@@ -1,6 +1,6 @@
 {
   "name": "@dscvr-one/canvas-client-sdk",
-  "version": "1.0.2",
+  "version": "1.0.5",
   "description": "SDK for iframes apps to connect to dscvr host using postMessage rpc",
   "type": "module",
   "main": "src/index.ts",
@@ -8,7 +8,7 @@
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts"
   },
-  "homepage": "https://github.com/dscvr-one/dscvr-canvas/libs/canvas-client-sdk#readme",
+  "homepage": "https://github.com/dscvr-one/dscvr-canvas/tree/main/libs/canvas-client-sdk#readme",
   "files": [
     "dist"
   ],
@@ -32,7 +32,7 @@
     "rpc"
   ],
   "dependencies": {
-    "@dscvr-one/canvas-interface": "1.0.2",
+    "@dscvr-one/canvas-interface": "^1.0.0",
     "eventemitter3": "^5.0.1"
   },
   "license": "MIT",

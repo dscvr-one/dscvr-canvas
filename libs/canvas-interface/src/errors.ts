@@ -12,3 +12,8 @@ export class WindowNotDefinedError extends Error {
   name = 'WindowNotDefinedError';
   message: string = 'Window is not defined';
 }
+
+export class ReferrerNotDefinedError extends Error {
+  name = 'ReferrerNotDefinedError';
+  message: string = 'Referrer is not defined';
+}

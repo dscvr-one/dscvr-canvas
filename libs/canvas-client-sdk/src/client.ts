@@ -2,7 +2,7 @@ import EventEmitter from 'eventemitter3';
 import * as CanvasInterface from '@dscvr-one/canvas-interface';
 
 export class CanvasClient {
-  private sourceOrigin = '*';
+  private sourceOrigin: string;
   private initResponseMessage: CanvasInterface.Lifecycle.InitResponseMessage | null =
     null;
   private eventBus = new EventEmitter<
@@ -16,9 +16,10 @@ export class CanvasClient {
     }
     window.addEventListener('message', this.handleReceiveMessage);
 
-    if (document.referrer) {
-      this.sourceOrigin = document.referrer;
+    if (!document.referrer) {
+      throw new CanvasInterface.ReferrerNotDefinedError();
     }
+    this.sourceOrigin = document.referrer;
   }
 
   destroy() {

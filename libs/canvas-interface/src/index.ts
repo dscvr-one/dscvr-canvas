@@ -13,6 +13,7 @@ export {
   ClientAlreadyInitializedError,
   ClientNotInitializedError,
   WindowNotDefinedError,
+  ReferrerNotDefinedError,
 } from './errors';
 
 export const VERSION = 'vNext';

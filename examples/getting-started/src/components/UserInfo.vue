@@ -19,8 +19,8 @@ defineEmits<{
         <b>User ID: </b><span class="text-gray-300 group-hover:text-indigo-300">{{ user.id }}</span>
       </p>
       <p>
-        <b>User Name: </b
-        ><span class="text-gray-300 group-hover:text-indigo-300">{{ user.username }}</span>
+        <b>User Name: </b>
+        <span class="text-gray-300 group-hover:text-indigo-300">{{ user.username }}</span>
       </p>
     </div>
   </a>

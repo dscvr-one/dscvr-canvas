@@ -1,6 +1,6 @@
 {
   "name": "@dscvr-one/canvas-interface",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Types for iframes to interact with dscvr",
   "type": "module",
   "main": "src/index.ts",

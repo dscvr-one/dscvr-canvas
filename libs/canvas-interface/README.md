@@ -1,12 +1,10 @@
 # @dscvr-one/canvas-interface
 
-DSCVR canvas-interface provides the typescript types and schema validation for canvas iframe communication between external canvas apps and DSCVR canvas host.
-
-The library provides only types and schemas for validation using ZOD
+This package defines the schema and typescript types used for the client to host protocol for DSCVR canvas.
 
 ## Installation
 
-You can install via npm:
+Install with your favorite package manager:
 
 ```bash
 npm install @dscvr-one/canvas-interface

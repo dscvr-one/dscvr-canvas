@@ -1,12 +1,16 @@
 # @dscvr-one/canvas-client-sdk
 
-canvas-client-sdkxx is a small typescript library that can be used by iframe Apps to communicate with DSCVR's canvas hosts.
+This SDK can be used by DSCVR Canvas Applications to communicate with the DSCVR Frontend.
 
-The library provides a `CanvasClient` class with methods to establish communication with DSCVR to get the current context (user and content) as well as to execute wallet transactions.
+Current features include:
+
+- Get the current user and content.
+- Prompt the user to open an external link.
+- Execute wallet transactions.
 
 ## Installation
 
-You can install Frames Adapter via npm:
+Install with your favorite package manager:
 
 ```bash
 npm install @dscvr-one/canvas-client-sdk
@@ -20,87 +24,33 @@ yarn add @dscvr-one/canvas-client-sdk
 
 ## Usage
 
-To use the CanvasClient, simply import it into your typescript project:
+To use the SDK:
+
+1. Import `CanvasClient` and `CanvasInterface` into your typescript project:
 
 ```typescript
 import { CanvasInterface, CanvasClient } from '@dscvr-one/canvas-client-sdk';
 ```
 
-Then, instantiate `CanvasClient`
+2. Instantiate the `CanvasClient`:
 
 ```typescript
 const canvasClient = new CanvasClient();
 ```
 
-Use `CanvasInterface` to access the communication messages types and schemas.
+3. Start the handshake:
 
 ```typescript
-const user: CanvasInterface.Handshake.User = response.untrusted.user;
-const content: CanvasInterface.Handshake.Content = response.untrusted.content;
-```
-
-### Example
-
-```typescript
-import {
-  CanvasInterface,
-  CanvasClient,
-} from '@dscvr-one/canvas-client-sdk';
-
-const canvasClient = new CanvasClient();
-
-const startHandshake = async () => {
-  const response = await canvasClient.ready();
-  // make sure to validate response.trustedBytes using @dscvr-one/canvas-server-sdk so the app is not used by platforms other than DSCVR
-  if (response) {
-    const user: CanvasInterface.Handshake.User = response.untrusted.user;
-    const content: CanvasInterface.Handshake.Content = response.untrusted.content;
-    // ...
-  }
-};
-
-// Open an external link on DSCVR host
-const openLink = () => {
-  const url = 'https://...';
-  canvasClient.openLink(url);
-};
-
-// Execute a wallet transaction
-const createTx = async (response: CanvasInterface.User.ConnectWalletResponseMessage) => {
-  if (!response.success) {
-    console.error('Failed to connect wallet')
-    return
-  }
-  // make sure to validate response.trustedBytes using @dscvr-one/canvas-server-sdk so the app is not used by platforms other than DSCVR
-  const unsignedTx = // ...
-  return unsignedTx;
-}
-
-const sendTransaction = async () => {
-  const response = await canvasClient.connectWalletAndSignTransaction(
-    'solana:101',
-    createTx
-  );
-  if (!response) {
-    console.error('Transaction not created');
-    return;
-  }
-  // make sure to validate response.trustedBytes using @dscvr-one/canvas-server-sdk so the app is not used by platforms other than DSCVR
-  if (response.untrusted.success) {
-    const signedTx = response.untrusted.signedTx;
-    // ....
-  } else {
-    console.error('Transaction failed', response);
-  }
+const response = await canvasClient.ready();
+//
+if (response) {
+  // The handshake allows access to the user and the content that the application is embedded in.
+  const user: CanvasInterface.Handshake.User = response.untrusted.user;
+  const content: CanvasInterface.Handshake.Content = response.untrusted.content;
+  // ...
 }
 ```
 
 ## Contributing
 
 Contributions are welcome! If you find any issues or have suggestions for improvement, feel free to open an issue or submit a pull request.
-
-_Note_:
-
-1. Please contribute using [GitHub Flow](https://web.archive.org/web/20191104103724/https://guides.github.com/introduction/flow/)
-2. Commits & PRs will be allowed only if the commit messages & PR titles follow the [conventional commit standard](https://www.conventionalcommits.org/), _read more about it [here](https://github.com/conventional-changelog/commitlint/tree/master/%40commitlint/config-conventional#type-enum)_
-3. PS. Ensure your commits are signed. _[Read why](https://withblue.ink/2020/05/17/how-and-why-to-sign-git-commits.html)_

@@ -1,6 +1,6 @@
 {
   "name": "@dscvr-one/canvas-client-sdk",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "SDK for iframes apps to connect to dscvr host using postMessage rpc",
   "type": "module",
   "main": "src/index.ts",

@@ -9,6 +9,7 @@ import { validateHostMessage } from './api/dscvr';
 
 const chainId = 'solana:101';
 let canvasClient: CanvasClient | undefined;
+const resizeObserver = new ResizeObserver(() => canvasClient?.resize());
 const isReady = ref(false);
 const jupiterPlaceholderRef = ref<HTMLDivElement>();
 const user = ref<CanvasInterface.Lifecycle.User>();
@@ -22,6 +23,8 @@ const initJupiterWidget = () => {
     integratedTargetId: 'jupiter-widget',
     endpoint: jupiterRpcEndpoint,
     enableWalletPassthrough: true,
+    onFormUpdate: () => canvasClient?.resize(),
+    onScreenUpdate: () => canvasClient?.resize(),
     onRequestConnectWallet: async () => {
       const response = await canvasClient?.connectWallet(chainId);
       if (!response?.untrusted.success) {
@@ -83,14 +86,17 @@ const start = async () => {
     content.value = response.untrusted.content;
   }
   initJupiterWidget();
+  canvasClient?.resize();
 };
 
 onMounted(() => {
+  resizeObserver.observe(document.body);
   canvasClient = new CanvasClient();
   start();
 });
 
 onUnmounted(() => {
+  resizeObserver?.disconnect();
   if (canvasClient) {
     canvasClient.destroy();
   }

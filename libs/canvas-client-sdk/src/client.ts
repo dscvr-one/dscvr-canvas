@@ -6,6 +6,7 @@ export class CanvasClient {
   private initResponseMessage:
     | CanvasInterface.Lifecycle.InitResponseMessage
     | undefined = undefined;
+  private initialInteractionRegistered = false;
   private eventBus = new EventEmitter<
     CanvasInterface.HostMessageType,
     CanvasInterface.HostMessage
@@ -16,6 +17,8 @@ export class CanvasClient {
       throw new CanvasInterface.WindowNotDefinedError();
     }
     window.addEventListener('message', this.handleReceiveMessage);
+    window.addEventListener('click', this.handleInitialInteraction);
+    window.addEventListener('focus', this.handleInitialInteraction);
 
     if (!document.referrer) {
       throw new CanvasInterface.ReferrerNotDefinedError();
@@ -26,6 +29,7 @@ export class CanvasClient {
   destroy() {
     this.initResponseMessage = undefined;
     window.removeEventListener('message', this.handleReceiveMessage);
+    this.removeInitialInteractionListeners();
   }
 
   get isReady() {
@@ -54,6 +58,17 @@ export class CanvasClient {
       payload: {
         url,
       },
+    });
+  }
+
+  resize(newPayload?: CanvasInterface.User.ResizeRequestMessage['payload']) {
+    const payload = newPayload ?? this.getWindowSize();
+    if (payload.width <= 0 || payload.height <= 0) {
+      return;
+    }
+    this.sendMessage({
+      type: 'user:resize-request',
+      payload,
     });
   }
 
@@ -159,4 +174,26 @@ export class CanvasClient {
 
     this.eventBus.emit(message.type, message);
   };
+
+  private handleInitialInteraction = () => {
+    this.removeInitialInteractionListeners();
+    if (!this.initialInteractionRegistered) {
+      this.initialInteractionRegistered = true;
+      this.sendMessage({
+        type: 'user:initial-interaction-request',
+      });
+    }
+  };
+
+  private removeInitialInteractionListeners() {
+    window.removeEventListener('click', this.handleInitialInteraction);
+    window.removeEventListener('focus', this.handleInitialInteraction);
+  }
+
+  private getWindowSize() {
+    return {
+      width: window.document.body.clientWidth,
+      height: window.document.body.clientHeight,
+    };
+  }
 }

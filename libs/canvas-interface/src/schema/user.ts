@@ -8,6 +8,18 @@ export const ConnectWalletRequestMessageSchema = createClientMessageSchema(
   }),
 );
 
+export const InitialInteractionRequestMessageSchema = createClientMessageSchema(
+  'user:initial-interaction-request',
+);
+
+export const ResizeRequestMessageSchema = createClientMessageSchema(
+  'user:resize-request',
+  zod.object({
+    width: zod.number(),
+    height: zod.number(),
+  }),
+);
+
 export const ConnectWalletResponseMessageSchema = createHostMessageSchema(
   'user:connect-wallet-response',
   zod.union([
@@ -67,6 +79,10 @@ export const OpenLnkRequestMessageSchema = createClientMessageSchema(
   }),
 );
 
+export interface InitialInteractionRequestMessage
+  extends zod.infer<typeof InitialInteractionRequestMessageSchema> {}
+export interface ResizeRequestMessage
+  extends zod.infer<typeof ResizeRequestMessageSchema> {}
 export interface ConnectWalletRequestMessage
   extends zod.infer<typeof ConnectWalletRequestMessageSchema> {}
 export interface ConnectWalletResponseMessage

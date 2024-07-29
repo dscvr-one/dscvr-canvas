@@ -1,5 +1,7 @@
+html {
+  overflow: hidden;
+}
 body {
-  min-height: 100vh;
   display: flex;
   place-items: center;
   background-color: #181818;
@@ -9,5 +11,5 @@ body {
 }
 
 #app {
-  margin: 0 auto;
+  margin: 40px auto;
 }

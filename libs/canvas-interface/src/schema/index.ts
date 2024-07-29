@@ -7,6 +7,8 @@ import {
 } from './lifecycle';
 
 import {
+  InitialInteractionRequestMessageSchema,
+  ResizeRequestMessageSchema,
   ConnectWalletRequestMessageSchema,
   ConnectWalletResponseMessageSchema,
   SignAndSendTransactionRequestMessageSchema,
@@ -16,6 +18,8 @@ import {
 
 export const ClientMessageSchema = zod.union([
   InitRequestMessageSchema,
+  InitialInteractionRequestMessageSchema,
+  ResizeRequestMessageSchema,
   ConnectWalletRequestMessageSchema,
   SignAndSendTransactionRequestMessageSchema,
   OpenLnkRequestMessageSchema,

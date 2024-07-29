@@ -9,6 +9,7 @@ let canvasClient: CanvasClient | undefined;
 const isReady = ref(false);
 const user = ref<CanvasInterface.Lifecycle.User>();
 const content = ref<CanvasInterface.Lifecycle.Content>();
+const resizeObserver = new ResizeObserver(() => canvasClient?.resize());
 
 const start = async () => {
   if (!canvasClient) return;
@@ -28,12 +29,18 @@ const openUserProfile = () => {
   canvasClient.openLink(url);
 };
 
+const setBodyHeight = (height: number) => {
+  window.document.body.style.height = height ? `${height}px` : '';
+};
+
 onMounted(() => {
+  resizeObserver.observe(document.body);
   canvasClient = new CanvasClient();
   start();
 });
 
 onUnmounted(() => {
+  resizeObserver?.disconnect();
   if (canvasClient) {
     canvasClient.destroy();
   }
@@ -46,6 +53,16 @@ onUnmounted(() => {
     <template v-else>
       <user-info v-if="user" :user="user" @open="openUserProfile" />
       <content-info v-if="content" :content="content" />
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <button
+          v-for="height in [1000, 1500, 0]"
+          type="submit"
+          class="text-white font-bold py-2 px-4 rounded bg-gray-500 hover:bg-gray-400 hover:border-gray-500"
+          @click="setBodyHeight(height)"
+        >
+          {{ height ? `Set height to ${height}px` : 'Reset height' }}
+        </button>
+      </div>
     </template>
   </div>
 </template>

@@ -153,28 +153,28 @@ const submit = () => {
       <span class="flex-1 text-gray-400">{{ sourceAddress }}</span>
     </div>
 
-    <div class="flex items-center gap-4 w-full">
+    <div class="flex flex-col md:flex-row items-center gap-4 w-full">
       <label for="target" class="min-w-28">Target address</label>
       <input
         type="text"
         name="target"
-        class="flex-1 text-gray-700 border border-gray-700 rounded-xl"
+        class="flex-1 text-gray-700 border border-gray-700 rounded-xl w-full"
         v-model="targetAddress"
       />
     </div>
 
-    <div class="flex items-center gap-4 w-full">
+    <div class="flex flex-col md:flex-row items-center gap-4 w-full">
       <label for="amount" class="min-w-28" step="0.000000001">Amount (SOL)</label>
       <input
         type="number"
         name="amount"
-        class="flex-1 text-gray-700 border border-gray-700 rounded-xl"
+        class="flex-1 text-gray-700 border border-gray-700 rounded-xl w-full"
         v-model="amount"
         step="0.000000001"
       />
     </div>
     <p v-if="errorMessage" class="text-red-500">{{ errorMessage }}</p>
-    <div class="flex gap-6 items-center">
+    <div class="flex flex-col md:flex-row gap-6 items-center">
       <button
         v-for="clusterItem in clusterList"
         type="submit"

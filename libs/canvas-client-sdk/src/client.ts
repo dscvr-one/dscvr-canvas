@@ -1,5 +1,7 @@
 import EventEmitter from 'eventemitter3';
+import type { Adapter } from '@solana/wallet-adapter-base';
 import * as CanvasInterface from '@dscvr-one/canvas-interface';
+import { CanvasWalletAdapter } from './adapter';
 
 export class CanvasClient {
   private sourceOrigin: string;
@@ -88,6 +90,25 @@ export class CanvasClient {
       },
     });
     return responsePromise;
+  }
+
+  // TODO: verify this process with Chandra
+  getWalletAdapter(
+    connectionResponse: CanvasInterface.User.ConnectWalletResponseMessage,
+  ): Adapter | undefined {
+    if (!connectionResponse.untrusted.success) {
+      return;
+    }
+    const sendWalletMessage = (m: CanvasInterface.Wallet.RequestMessage) =>
+      this.sendMessage(m);
+    return new CanvasWalletAdapter(this.eventBus, sendWalletMessage, {
+      name: connectionResponse.untrusted.walletName,
+      icon: connectionResponse.untrusted.walletIcon,
+      url: connectionResponse.untrusted.walletUrl,
+      supportedTransactionVersions:
+        connectionResponse.untrusted.walletSupportedTransactionVersions,
+      address: connectionResponse.untrusted.address,
+    });
   }
 
   signAndSendTransaction(

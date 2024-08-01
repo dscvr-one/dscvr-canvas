@@ -266,6 +266,15 @@ importers:
       '@dscvr-one/canvas-interface':
         specifier: ^1.0.0
         version: link:../canvas-interface
+      '@solana/wallet-adapter-base':
+        specifier: ^0.9.23
+        version: 0.9.23(@solana/web3.js@1.95.1)
+      '@solana/web3.js':
+        specifier: ^1.91.4
+        version: 1.95.1
+      bs58:
+        specifier: ^5.0.0
+        version: 5.0.0
       eventemitter3:
         specifier: ^5.0.1
         version: 5.0.1
@@ -318,6 +327,9 @@ importers:
 
   libs/canvas-interface:
     dependencies:
+      '@solana/wallet-adapter-base':
+        specifier: ^0.9.23
+        version: 0.9.23(@solana/web3.js@1.95.1)
       zod:
         specifier: ^3.23.8
         version: 3.23.8

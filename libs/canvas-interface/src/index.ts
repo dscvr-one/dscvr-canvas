@@ -1,5 +1,6 @@
 export * as Lifecycle from './schema/lifecycle';
 export * as User from './schema/user';
+export * as Wallet from './schema/wallet';
 export {
   ClientMessageSchema,
   HostMessageSchema,

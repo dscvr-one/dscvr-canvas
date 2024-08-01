@@ -43,50 +43,27 @@ export function createClientMessageSchema<
   });
 }
 
-export function createHostMessageSchema<T extends string>(
-  type: T,
-): zod.ZodObject<{
-  type: zod.ZodLiteral<T>;
-}>;
-
-export function createHostMessageSchema<
+export const createHostMessageSchema = <
   T extends string,
   D extends zod.ZodTypeAny,
 >(
   type: T,
-  payloadSchema: D,
+  untrustedSchema: D,
 ): zod.ZodObject<{
   type: zod.ZodLiteral<T>;
   untrusted: D;
   trustedBytes: zod.ZodString;
-}>;
-
-export function createHostMessageSchema<
-  T extends string,
-  D extends zod.ZodTypeAny,
->(
-  type: T,
-  untrustedSchema?: D,
-):
-  | zod.ZodObject<{
-      type: zod.ZodLiteral<T>;
-      trustedBytes: zod.ZodString;
-    }>
-  | zod.ZodObject<{
-      type: zod.ZodLiteral<T>;
-      untrusted: D;
-      trustedBytes: zod.ZodString;
-    }> {
-  if (!untrustedSchema) {
-    return zod.object({
-      type: zod.literal(type),
-      trustedBytes: zod.string(),
-    });
-  }
-
+}> => {
   return zod.object({
     type: zod.literal(type),
     untrusted: untrustedSchema,
     trustedBytes: zod.string(),
   });
-}
+};
+
+export const createFailedResponse = () =>
+  zod.object({
+    success: zod.literal(false),
+    errorReason: zod.enum(['user-cancelled', 'error']),
+    error: zod.string().optional(),
+  });

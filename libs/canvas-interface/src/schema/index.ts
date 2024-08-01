@@ -16,6 +16,11 @@ import {
   OpenLnkRequestMessageSchema,
 } from './user';
 
+import {
+  requestMessageSchemas as walletRequestMessageSchemas,
+  responseMessageSchemas as walletResponseMessageSchemas,
+} from './wallet';
+
 export const ClientMessageSchema = zod.union([
   InitRequestMessageSchema,
   InitialInteractionRequestMessageSchema,
@@ -23,6 +28,15 @@ export const ClientMessageSchema = zod.union([
   ConnectWalletRequestMessageSchema,
   SignAndSendTransactionRequestMessageSchema,
   OpenLnkRequestMessageSchema,
+  ...walletRequestMessageSchemas,
+]);
+
+export const SignedHostMessageSchema = zod.union([
+  InitResponseMessageSchema,
+  CloseMessageSchema,
+  ConnectWalletResponseMessageSchema,
+  SignAndSendTransactionResponseMessageSchema,
+  ...walletResponseMessageSchemas,
 ]);
 
 export const HostMessageSchema = zod.union([
@@ -30,6 +44,7 @@ export const HostMessageSchema = zod.union([
   CloseMessageSchema,
   ConnectWalletResponseMessageSchema,
   SignAndSendTransactionResponseMessageSchema,
+  ...walletResponseMessageSchemas,
 ]);
 
 const clientMessageTypes = ClientMessageSchema.options.map(

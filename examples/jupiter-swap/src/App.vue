@@ -1,14 +1,18 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue';
-import * as bs58 from 'bs58';
-import { PublicKey } from '@solana/web3.js';
 import { CanvasInterface, CanvasClient } from '@dscvr-one/canvas-client-sdk';
-import type { WalletContextState } from '@jup-ag/wallet-adapter';
-import { createTXFromInstructions, jupiterRpcEndpoint } from './api/jupiter';
+import type {
+  Adapter,
+  MessageSignerWalletAdapter,
+  SignerWalletAdapter,
+  WalletContextState
+} from '@jup-ag/wallet-adapter';
+import { jupiterRpcEndpoint } from './api/jupiter';
 import { validateHostMessage } from './api/dscvr';
 
-const chainId = 'solana:101';
 let canvasClient: CanvasClient | undefined;
+// TODO: with the adapter approach this is not necessary
+const chainId = 'solana:101';
 const resizeObserver = new ResizeObserver(() => canvasClient?.resize());
 const isReady = ref(false);
 const jupiterPlaceholderRef = ref<HTMLDivElement>();
@@ -17,7 +21,6 @@ const content = ref<CanvasInterface.Lifecycle.Content>();
 
 const initJupiterWidget = () => {
   if (!jupiterPlaceholderRef.value || !canvasClient) return;
-  let currentWalletPublicKey: PublicKey | undefined = undefined;
   window.Jupiter.init({
     displayMode: 'integrated',
     integratedTargetId: 'jupiter-widget',
@@ -26,52 +29,54 @@ const initJupiterWidget = () => {
     onFormUpdate: () => canvasClient?.resize(),
     onScreenUpdate: () => canvasClient?.resize(),
     onRequestConnectWallet: async () => {
-      const response = await canvasClient?.connectWallet(chainId);
+      if (!canvasClient) {
+        throw new Error('Canvas client is not initialized');
+      }
+      const response = await canvasClient.connectWallet(chainId);
       if (!response?.untrusted.success) {
         throw new Error('Failed to connect wallet');
       }
-      currentWalletPublicKey = new PublicKey(response.untrusted.address);
-      const passthroughWalletContextState = {
-        publicKey: currentWalletPublicKey,
-        connected: true,
-        wallet: {
-          adapter: {
-            name: response.untrusted.walletName,
-            icon: response.untrusted.walletIcon,
-            publicKey: currentWalletPublicKey
-          }
-        }
-      } as WalletContextState;
-      window.Jupiter.syncProps({ passthroughWalletContextState });
-    },
-    onRequestIxCallback: async (payload) => {
-      if (!currentWalletPublicKey) {
-        console.error('no wallet currentWalletPublicKey is selected');
-        return;
+      const adapter = canvasClient.getWalletAdapter(response);
+      if (!adapter) {
+        throw new Error('Failed to get wallet adapter');
       }
-      const versionedTransaction = await createTXFromInstructions(currentWalletPublicKey, payload);
-      const unsignedTx = bs58.encode(versionedTransaction.serialize());
-
-      const signedTx = await canvasClient!.signAndSendTransaction({
-        chainId,
-        unsignedTx
+      syncProps(adapter);
+      adapter.on('disconnect', () => {
+        syncProps(adapter);
       });
-      if (!signedTx.untrusted.success) {
-        payload.onSubmitWithIx({
-          error: new Error('User cancelled transaction signing.')
-        });
-        return;
-      }
-      payload.onSubmitWithIx({
-        txid: signedTx.untrusted.signedTx,
-        inputAddress: payload.meta.sourceAddress,
-        outputAddress: payload.meta.destinationAddress,
-        inputAmount: Number(payload.meta.quoteResponseMeta.quoteResponse.inAmount[0]),
-        outputAmount: Number(payload.meta.quoteResponseMeta.quoteResponse.outAmount[0])
-      });
-    },
-    onSuccess: (payload) => {}
+    }
   });
+};
+
+const syncProps = (adapter: Adapter) => {
+  const passthroughWalletContextState: WalletContextState = {
+    publicKey: adapter.publicKey,
+    autoConnect: false,
+    disconnecting: false,
+    connected: adapter.connected,
+    wallet: {
+      readyState: adapter.readyState,
+      adapter
+    },
+    wallets: [],
+    connecting: false,
+    select: () => {
+      throw new Error('Not implemented');
+    },
+    connect: () => {
+      throw new Error('Not implemented');
+    },
+    disconnect: () => adapter.disconnect(),
+    sendTransaction: (...params) => adapter.sendTransaction(...params),
+    signTransaction: (...params) => (adapter as SignerWalletAdapter).signTransaction(...params),
+    signAllTransactions: (...params) =>
+      (adapter as SignerWalletAdapter).signAllTransactions(...params),
+    signMessage: (...params) => (adapter as MessageSignerWalletAdapter).signMessage(...params),
+    signIn: () => {
+      throw new Error('Not implemented');
+    }
+  };
+  window.Jupiter.syncProps({ passthroughWalletContextState });
 };
 
 const start = async () => {

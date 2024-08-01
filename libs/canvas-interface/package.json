@@ -29,6 +29,7 @@
     "zod"
   ],
   "dependencies": {
+    "@solana/wallet-adapter-base": "^0.9.23",
     "zod": "^3.23.8"
   },
   "license": "MIT",

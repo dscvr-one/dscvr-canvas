@@ -33,6 +33,9 @@
   ],
   "dependencies": {
     "@dscvr-one/canvas-interface": "^1.0.0",
+    "@solana/wallet-adapter-base": "^0.9.23",
+    "@solana/web3.js": "^1.91.4",
+    "bs58": "^5.0.0",
     "eventemitter3": "^5.0.1"
   },
   "license": "MIT",

@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue';
 import { CanvasInterface, CanvasClient } from '@dscvr-one/canvas-client-sdk';
-import type { WalletContextState } from '@jup-ag/wallet-adapter';
+import type {
+  Adapter,
+  MessageSignerWalletAdapter,
+  SignerWalletAdapter,
+  WalletContextState
+} from '@jup-ag/wallet-adapter';
 import { jupiterRpcEndpoint } from './api/jupiter';
 import { validateHostMessage } from './api/dscvr';
 
@@ -32,20 +37,46 @@ const initJupiterWidget = () => {
         throw new Error('Failed to connect wallet');
       }
       const adapter = canvasClient.getWalletAdapter(response);
-      console.log('adapter', adapter);
       if (!adapter) {
         throw new Error('Failed to get wallet adapter');
       }
-      const passthroughWalletContextState = {
-        publicKey: adapter.publicKey,
-        connected: true,
-        wallet: {
-          adapter
-        }
-      } as WalletContextState;
-      window.Jupiter.syncProps({ passthroughWalletContextState });
+      syncProps(adapter);
+      adapter.on('disconnect', () => {
+        syncProps(adapter);
+      });
     }
   });
+};
+
+const syncProps = (adapter: Adapter) => {
+  const passthroughWalletContextState: WalletContextState = {
+    publicKey: adapter.publicKey,
+    autoConnect: false,
+    disconnecting: false,
+    connected: adapter.connected,
+    wallet: {
+      readyState: adapter.readyState,
+      adapter
+    },
+    wallets: [],
+    connecting: false,
+    select: () => {
+      throw new Error('Not implemented');
+    },
+    connect: () => {
+      throw new Error('Not implemented');
+    },
+    disconnect: () => adapter.disconnect(),
+    sendTransaction: (...params) => adapter.sendTransaction(...params),
+    signTransaction: (...params) => (adapter as SignerWalletAdapter).signTransaction(...params),
+    signAllTransactions: (...params) =>
+      (adapter as SignerWalletAdapter).signAllTransactions(...params),
+    signMessage: (...params) => (adapter as MessageSignerWalletAdapter).signMessage(...params),
+    signIn: () => {
+      throw new Error('Not implemented');
+    }
+  };
+  window.Jupiter.syncProps({ passthroughWalletContextState });
 };
 
 const start = async () => {

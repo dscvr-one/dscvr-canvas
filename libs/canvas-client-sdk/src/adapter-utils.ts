@@ -1,13 +1,8 @@
 import * as bs58 from 'bs58';
 import { Transaction, VersionedTransaction } from '@solana/web3.js';
 
-export const parseLegacyTransaction = (unsignedTx: string) => {
-  return Transaction.from(Buffer.from(unsignedTx, 'base64'));
-};
-
-export const parseVersionedTransaction = (unsignedTx: string) => {
-  const txUint8Array = bs58.decode(unsignedTx);
-  return VersionedTransaction.deserialize(txUint8Array);
+export const parseTransaction = (unsignedTx: string) => {
+  return VersionedTransaction.deserialize(bs58.decode(unsignedTx));
 };
 
 export const serializeTransaction = (
@@ -17,5 +12,5 @@ export const serializeTransaction = (
     return bs58.encode(transaction.serialize());
   }
 
-  return transaction.serialize().toString('base64');
+  return bs58.encode(Uint8Array.from(transaction.serialize()));
 };

@@ -1,6 +1,5 @@
 import {
   BaseMessageSignerWalletAdapter,
-  WalletDisconnectedError,
   WalletDisconnectionError,
   WalletPublicKeyError,
   WalletReadyState,
@@ -20,11 +19,7 @@ import {
 } from '@solana/web3.js';
 import EventEmitter from 'eventemitter3';
 import * as CanvasInterface from '@dscvr-one/canvas-interface';
-import {
-  parseLegacyTransaction,
-  parseVersionedTransaction,
-  serializeTransaction,
-} from './adapter-utils';
+import { parseTransaction, serializeTransaction } from './adapter-utils';
 
 // TODO: Discovery process for window injection and discover
 export class CanvasWalletAdapter extends BaseMessageSignerWalletAdapter {
@@ -56,6 +51,7 @@ export class CanvasWalletAdapter extends BaseMessageSignerWalletAdapter {
     if (wallet.address) {
       this._publicKey = this.parsePublicKey(wallet.address);
       this._connected = true;
+      this.emit('connect', this._publicKey);
     }
   }
 
@@ -104,8 +100,6 @@ export class CanvasWalletAdapter extends BaseMessageSignerWalletAdapter {
 
   async disconnect(): Promise<void> {
     if (this.connected) {
-      this._publicKey = null;
-
       try {
         const response =
           await this.sendWalletRequest<CanvasInterface.Wallet.DisconnectResponseMessage>(
@@ -187,11 +181,7 @@ export class CanvasWalletAdapter extends BaseMessageSignerWalletAdapter {
         throw new Error(response.untrusted.error);
       }
 
-      if (transaction instanceof Transaction) {
-        return parseLegacyTransaction(response.untrusted.signedTx) as T;
-      }
-
-      return parseVersionedTransaction(response.untrusted.signedTx) as T;
+      return parseTransaction(response.untrusted.signedTx) as T;
     } catch (error: any) {
       this.emit('error', error);
       throw new WalletSignTransactionError(error?.message, error);
@@ -220,11 +210,7 @@ export class CanvasWalletAdapter extends BaseMessageSignerWalletAdapter {
         throw new Error(response.untrusted.error);
       }
 
-      if (transactions[0] instanceof Transaction) {
-        return response.untrusted.signedTxs.map(parseLegacyTransaction) as T[];
-      }
-
-      return response.untrusted.signedTxs.map(parseVersionedTransaction) as T[];
+      return response.untrusted.signedTxs.map(parseTransaction) as T[];
     } catch (error: any) {
       this.emit('error', error);
       throw new WalletSignTransactionError(error?.message, error);
@@ -259,11 +245,7 @@ export class CanvasWalletAdapter extends BaseMessageSignerWalletAdapter {
 
   private _disconnected = () => {
     this._publicKey = null;
-    if (this.connected) {
-      this._connected = false;
-      this.emit('error', new WalletDisconnectedError());
-      this.emit('disconnect');
-    }
+    this._connected = false;
   };
 
   private parsePublicKey(address: string) {

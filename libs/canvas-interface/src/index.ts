@@ -1,6 +1,9 @@
 export * as Lifecycle from './schema/lifecycle';
 export * as User from './schema/user';
 export {
+  createClientMessageSchema,
+  createHostMessageSchema,
+  createFailedResponsePayload,
   ClientMessageSchema,
   HostMessageSchema,
   type ClientMessage,

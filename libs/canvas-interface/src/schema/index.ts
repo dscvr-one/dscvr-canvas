@@ -1,5 +1,11 @@
 import * as zod from 'zod';
 
+export {
+  createClientMessageSchema,
+  createHostMessageSchema,
+  createFailedResponsePayload as createFailedResponsePayload,
+} from './base';
+
 import {
   CloseMessageSchema,
   InitRequestMessageSchema,

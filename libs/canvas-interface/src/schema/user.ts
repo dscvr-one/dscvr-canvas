@@ -1,5 +1,9 @@
 import * as zod from 'zod';
-import { createClientMessageSchema, createHostMessageSchema } from './base';
+import {
+  createClientMessageSchema,
+  createFailedResponsePayload,
+  createHostMessageSchema,
+} from './base';
 
 export const ConnectWalletRequestMessageSchema = createClientMessageSchema(
   'user:connect-wallet-request',
@@ -28,12 +32,11 @@ export const ConnectWalletResponseMessageSchema = createHostMessageSchema(
       address: zod.string(),
       walletName: zod.string(),
       walletIcon: zod.string(),
+      walletUrl: zod.string(),
+      walletSupportedTransactionVersions:
+        zod.custom<ReadonlySet<'legacy' | 0>>(),
     }),
-    zod.object({
-      success: zod.literal(false),
-      errorReason: zod.enum(['user-cancelled', 'error']),
-      error: zod.string().optional(),
-    }),
+    createFailedResponsePayload(),
   ]),
 );
 
@@ -64,11 +67,7 @@ export const SignAndSendTransactionResponseMessageSchema =
         success: zod.literal(true),
         signedTx: zod.string(),
       }),
-      zod.object({
-        success: zod.literal(false),
-        errorReason: zod.enum(['user-cancelled', 'error']),
-        error: zod.string().optional(),
-      }),
+      createFailedResponsePayload(),
     ]),
   );
 

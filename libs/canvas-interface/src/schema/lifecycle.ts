@@ -28,7 +28,10 @@ export const InitResponseMessageSchema = createHostMessageSchema(
   }),
 );
 
-export const CloseMessageSchema = createHostMessageSchema('lifecycle:close');
+export const CloseMessageSchema = createHostMessageSchema(
+  'lifecycle:close',
+  zod.undefined(),
+);
 
 export interface User extends zod.infer<typeof UserSchema> {}
 export interface Content extends zod.infer<typeof ContentSchema> {}

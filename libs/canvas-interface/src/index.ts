@@ -6,6 +6,8 @@ export {
   createFailedResponsePayload,
   ClientMessageSchema,
   HostMessageSchema,
+  type BaseClientMessage,
+  type BaseHostMessage,
   type ClientMessage,
   type ClientMessageType,
   type HostMessage,
@@ -17,6 +19,7 @@ export {
   ClientNotInitializedError,
   WindowNotDefinedError,
   ReferrerNotDefinedError,
+  PluginAlreadyExistsError,
 } from './errors';
 
 export const VERSION = 'vNext';

@@ -1,5 +1,23 @@
 import * as zod from 'zod';
 
+export type BaseClientMessage<T extends string = string, D extends any = any> =
+  | {
+      type: T;
+    }
+  | {
+      type: T;
+      payload: D;
+    };
+
+export interface BaseHostMessage<
+  T extends string = string,
+  P extends any = any,
+> {
+  type: T;
+  untrusted?: P;
+  trustedBytes: string;
+}
+
 export function createClientMessageSchema<T extends string>(
   type: T,
 ): zod.ZodObject<{

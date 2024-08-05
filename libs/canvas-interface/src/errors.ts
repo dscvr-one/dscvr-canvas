@@ -17,3 +17,15 @@ export class ReferrerNotDefinedError extends Error {
   name = 'ReferrerNotDefinedError';
   message: string = 'Referrer is not defined';
 }
+
+export class PluginAlreadyExistsError extends Error {
+  name = 'PluginAlreadyExistsError';
+
+  constructor(private pluginName: string) {
+    super();
+  }
+
+  get message() {
+    return `Plugin '${this.pluginName}' already exists`;
+  }
+}

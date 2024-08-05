@@ -1,5 +1,15 @@
 import EventEmitter from 'eventemitter3';
 import * as CanvasInterface from '@dscvr-one/canvas-interface';
+import { CanvasPlugin } from './plugin';
+
+type GenericCanvasPlugin = CanvasPlugin<
+  CanvasInterface.BaseClientMessage,
+  CanvasInterface.BaseHostMessage
+>;
+
+export type CanvasClientOptions = {
+  plugins: GenericCanvasPlugin[];
+};
 
 export class CanvasClient {
   private sourceOrigin: string;
@@ -8,11 +18,12 @@ export class CanvasClient {
     | undefined = undefined;
   private initialInteractionRegistered = false;
   private eventBus = new EventEmitter<
-    CanvasInterface.HostMessageType,
-    CanvasInterface.HostMessage
+    string,
+    CanvasInterface.BaseHostMessage
   >();
+  private plugins: GenericCanvasPlugin[] = [];
 
-  constructor() {
+  constructor(options?: CanvasClientOptions) {
     if (typeof window === 'undefined') {
       throw new CanvasInterface.WindowNotDefinedError();
     }
@@ -24,12 +35,28 @@ export class CanvasClient {
       throw new CanvasInterface.ReferrerNotDefinedError();
     }
     this.sourceOrigin = document.referrer;
+    if (options) {
+      this.setOptions(options);
+    }
+  }
+
+  setOptions(config: CanvasClientOptions) {
+    for (const plugin of config.plugins) {
+      this.addPlugin(plugin);
+    }
+  }
+
+  getPlugin<T extends GenericCanvasPlugin>(name: string): T | undefined {
+    return this.plugins.find((p) => p.name === name) as T | undefined;
   }
 
   destroy() {
     this.initResponseMessage = undefined;
     window.removeEventListener('message', this.handleReceiveMessage);
     this.removeInitialInteractionListeners();
+    this.plugins.forEach((plugin) => {
+      plugin.destroy();
+    });
   }
 
   get isReady() {
@@ -146,18 +173,19 @@ export class CanvasClient {
     });
   }
 
-  private sendMessage(message: CanvasInterface.ClientMessage) {
+  private sendMessage(message: CanvasInterface.BaseClientMessage) {
     window.parent.postMessage(message, this.sourceOrigin);
   }
 
   private handleReceiveMessage = (
-    event: MessageEvent<CanvasInterface.HostMessage>,
+    event: MessageEvent<CanvasInterface.BaseHostMessage>,
   ) => {
     const messageData = event.data;
 
     const parsedMessage =
       CanvasInterface.HostMessageSchema.safeParse(messageData);
     if (!parsedMessage.success) {
+      this.handleReceivePluginMessage(messageData);
       return;
     }
 
@@ -174,6 +202,17 @@ export class CanvasClient {
 
     this.eventBus.emit(message.type, message);
   };
+
+  private handleReceivePluginMessage(
+    messageData: CanvasInterface.BaseHostMessage,
+  ) {
+    for (const plugin of this.plugins) {
+      const success = plugin.handleReceiveMessage(messageData);
+      if (success) {
+        return;
+      }
+    }
+  }
 
   private handleInitialInteraction = () => {
     this.removeInitialInteractionListeners();
@@ -195,5 +234,14 @@ export class CanvasClient {
       width: window.document.body.clientWidth,
       height: window.document.body.clientHeight,
     };
+  }
+
+  private addPlugin(plugin: GenericCanvasPlugin) {
+    const existingPlugin = this.getPlugin(plugin.name);
+    if (existingPlugin) {
+      throw new CanvasInterface.PluginAlreadyExistsError(existingPlugin.name);
+    }
+    plugin.initialize((message) => this.sendMessage(message));
+    this.plugins.push(plugin);
   }
 }

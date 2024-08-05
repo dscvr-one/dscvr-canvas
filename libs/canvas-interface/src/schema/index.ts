@@ -4,6 +4,8 @@ export {
   createClientMessageSchema,
   createHostMessageSchema,
   createFailedResponsePayload as createFailedResponsePayload,
+  type BaseClientMessage,
+  type BaseHostMessage,
 } from './base';
 
 import {

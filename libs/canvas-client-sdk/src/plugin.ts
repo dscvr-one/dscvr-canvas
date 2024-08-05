@@ -3,14 +3,9 @@ import type {
   BaseClientMessage,
   BaseHostMessage,
 } from '@dscvr-one/canvas-interface';
+import { CanvasInterface } from '.';
 
 type SendMessageListener = (message: BaseClientMessage) => void;
-
-class PluginNotInitializedError extends Error {
-  constructor(pluginName: string) {
-    super(`Plugin ${pluginName} is not initialized on canvas client`);
-  }
-}
 
 export abstract class CanvasPlugin<
   CM extends BaseClientMessage,
@@ -50,7 +45,7 @@ export abstract class CanvasPlugin<
 
   protected sendMessage(message: CM) {
     if (!this._sendMessageListener) {
-      throw new PluginNotInitializedError(this.name);
+      throw new CanvasInterface.PluginNotInstalledError(this.name);
     }
     this._sendMessageListener(message);
   }

@@ -20,6 +20,7 @@ export {
   WindowNotDefinedError,
   ReferrerNotDefinedError,
   PluginAlreadyExistsError,
+  PluginNotInstalledError,
 } from './errors';
 
 export const VERSION = 'vNext';

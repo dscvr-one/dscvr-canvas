@@ -11,7 +11,6 @@ import type {
 import { jupiterRpcEndpoint } from './api/jupiter';
 import { validateHostMessage } from './api/dscvr';
 
-let canvasSolanaPlugin: CanvasSolanaPlugin | undefined;
 let canvasClient: CanvasClient | undefined;
 // TODO: with the adapter approach this is not necessary
 const chainId = 'solana:101';
@@ -31,14 +30,21 @@ const initJupiterWidget = () => {
     onFormUpdate: () => canvasClient?.resize(),
     onScreenUpdate: () => canvasClient?.resize(),
     onRequestConnectWallet: async () => {
-      if (!canvasClient || !canvasSolanaPlugin) {
+      if (!canvasClient) {
         throw new Error('Canvas client is not initialized');
       }
       const response = await canvasClient.connectWallet(chainId);
+      // canvasClient.signAndSendTransaction -> adapter.sendTransaction
+      //  - our rpc connection vs their rpc connection
+      //  - blowfish dialog
+
+      // adapter.signTransaction -> does not pass the connection
+      // jupiter is the one that sendTransaction
       if (!response?.untrusted.success) {
         throw new Error('Failed to connect wallet');
       }
-      const adapter = canvasSolanaPlugin.getWalletAdapter(response);
+      // TODO: Discovery process
+      const adapter = canvasClient.getSolanaWalletAdapter(response);
       if (!adapter) {
         throw new Error('Failed to get wallet adapter');
       }
@@ -98,10 +104,7 @@ const start = async () => {
 
 onMounted(() => {
   resizeObserver.observe(document.body);
-  canvasSolanaPlugin = new CanvasSolanaPlugin();
-  canvasClient = new CanvasClient({
-    plugins: [canvasSolanaPlugin]
-  });
+  canvasClient = new CanvasClient();
   start();
 });
 

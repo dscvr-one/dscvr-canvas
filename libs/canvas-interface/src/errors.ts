@@ -29,3 +29,15 @@ export class PluginAlreadyExistsError extends Error {
     return `Plugin '${this.pluginName}' already exists`;
   }
 }
+
+export class PluginNotInstalledError extends Error {
+  name = 'PluginNotInstalledError';
+
+  constructor(private pluginName: string) {
+    super();
+  }
+
+  get message() {
+    return `Plugin '${this.pluginName}' not installed in canvas client`;
+  }
+}

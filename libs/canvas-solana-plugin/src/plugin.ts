@@ -7,8 +7,9 @@ export class CanvasSolanaPlugin extends CanvasPlugin<
   CanvasSolanaInterface.ClientMessage,
   CanvasSolanaInterface.HostMessage
 > {
+  static Name = 'solana';
   constructor() {
-    super('solana');
+    super(CanvasSolanaPlugin.Name);
   }
   onDestroy() {}
 

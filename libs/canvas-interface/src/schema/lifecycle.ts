@@ -1,5 +1,10 @@
 import * as zod from 'zod';
-import { createClientMessageSchema, createHostMessageSchema } from './base';
+import {
+  createClientMessageSchema,
+  createHostMessageSchema,
+  type BaseClientMessage,
+  type BaseHostMessage,
+} from './base';
 
 export const UserSchema = zod.object({
   id: zod.string(),
@@ -28,15 +33,13 @@ export const InitResponseMessageSchema = createHostMessageSchema(
   }),
 );
 
-export const CloseMessageSchema = createHostMessageSchema(
-  'lifecycle:close',
-  zod.undefined(),
-);
+export const CloseMessageSchema = createHostMessageSchema('lifecycle:close');
 
 export interface User extends zod.infer<typeof UserSchema> {}
 export interface Content extends zod.infer<typeof ContentSchema> {}
 export interface InitRequestMessage
-  extends zod.infer<typeof InitRequestMessageSchema> {}
+  extends BaseClientMessage<typeof InitRequestMessageSchema> {}
 export interface InitResponseMessage
-  extends zod.infer<typeof InitResponseMessageSchema> {}
-export interface CloseMessage extends zod.infer<typeof CloseMessageSchema> {}
+  extends BaseHostMessage<typeof InitResponseMessageSchema> {}
+export interface CloseMessage
+  extends BaseClientMessage<typeof CloseMessageSchema> {}

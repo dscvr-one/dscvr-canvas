@@ -1,15 +1,5 @@
 import EventEmitter from 'eventemitter3';
 import * as CanvasInterface from '@dscvr-one/canvas-interface';
-import { CanvasPlugin } from './plugin';
-
-type GenericCanvasPlugin = CanvasPlugin<
-  CanvasInterface.BaseClientMessage,
-  CanvasInterface.BaseHostMessage
->;
-
-export type CanvasClientOptions = {
-  plugins: GenericCanvasPlugin[];
-};
 
 export class CanvasClient {
   private sourceOrigin: string;
@@ -21,9 +11,8 @@ export class CanvasClient {
     string,
     CanvasInterface.BaseHostMessage
   >();
-  private plugins: GenericCanvasPlugin[] = [];
 
-  constructor(options?: CanvasClientOptions) {
+  constructor() {
     if (typeof window === 'undefined') {
       throw new CanvasInterface.WindowNotDefinedError();
     }
@@ -35,28 +24,12 @@ export class CanvasClient {
       throw new CanvasInterface.ReferrerNotDefinedError();
     }
     this.sourceOrigin = document.referrer;
-    if (options) {
-      this.setOptions(options);
-    }
-  }
-
-  setOptions(config: CanvasClientOptions) {
-    for (const plugin of config.plugins) {
-      this.addPlugin(plugin);
-    }
-  }
-
-  getPlugin<T extends GenericCanvasPlugin>(name: string): T | undefined {
-    return this.plugins.find((p) => p.name === name) as T | undefined;
   }
 
   destroy() {
     this.initResponseMessage = undefined;
     window.removeEventListener('message', this.handleReceiveMessage);
     this.removeInitialInteractionListeners();
-    this.plugins.forEach((plugin) => {
-      plugin.destroy();
-    });
   }
 
   get isReady() {
@@ -71,12 +44,58 @@ export class CanvasClient {
       return this.initResponseMessage;
     } else {
       this.sendHandshake();
-      return await new Promise<CanvasInterface.Lifecycle.InitResponseMessage>(
-        (resolve) => {
-          this.eventBus.once('lifecycle:init-response', resolve);
-        },
+      return await this.subscribeOnce(
+        CanvasInterface.Lifecycle.InitResponseMessageSchema,
       );
     }
+  }
+
+  subscribe<S extends CanvasInterface.BaseClientMessageSchemaType>(
+    schema: S,
+    callback: (message: CanvasInterface.BaseClientMessage<S>) => void,
+  ) {
+    const responseType = schema.shape.type.value;
+    this.eventBus.on(
+      responseType,
+      (message: CanvasInterface.BaseClientMessage<S>) => {
+        const parsedMessage = schema.safeParse(message);
+        if (!parsedMessage.success) {
+          return;
+        }
+        callback(message);
+      },
+    );
+  }
+
+  subscribeOnce<S extends CanvasInterface.BaseClientMessageSchemaType>(
+    schema: S,
+  ): Promise<CanvasInterface.BaseClientMessage<S>> {
+    const responseType = schema.shape.type.value;
+    return new Promise<CanvasInterface.BaseClientMessage<S>>((resolve) => {
+      this.eventBus.once(
+        responseType,
+        (message: CanvasInterface.BaseClientMessage<S>) => {
+          const parsedMessage = schema.safeParse(message);
+          if (!parsedMessage.success) {
+            return;
+          }
+          resolve(message);
+        },
+      );
+    });
+  }
+
+  sendMessage(message: CanvasInterface.BaseClientMessage) {
+    window.parent.postMessage(message, this.sourceOrigin);
+  }
+
+  sendMessageAndWait<S extends CanvasInterface.BaseClientMessageSchemaType>(
+    message: CanvasInterface.BaseClientMessage,
+    responseSchema: S,
+  ): Promise<CanvasInterface.BaseClientMessage<S>> {
+    const responsePromise = this.subscribeOnce<S>(responseSchema);
+    this.sendMessage(message);
+    return responsePromise;
   }
 
   openLink(url: string) {
@@ -102,19 +121,15 @@ export class CanvasClient {
   connectWallet(
     chainId: string,
   ): Promise<CanvasInterface.User.ConnectWalletResponseMessage> {
-    const responsePromise =
-      new Promise<CanvasInterface.User.ConnectWalletResponseMessage>(
-        (resolve) => {
-          this.eventBus.once('user:connect-wallet-response', resolve);
+    return this.sendMessageAndWait(
+      {
+        type: 'user:connect-wallet-request',
+        payload: {
+          chainId,
         },
-      );
-    this.sendMessage({
-      type: 'user:connect-wallet-request',
-      payload: {
-        chainId,
       },
-    });
-    return responsePromise;
+      CanvasInterface.User.ConnectWalletResponseMessageSchema,
+    );
   }
 
   signAndSendTransaction(
@@ -122,17 +137,13 @@ export class CanvasClient {
       chainId: string;
     },
   ) {
-    const responsePromise =
-      new Promise<CanvasInterface.User.SignAndSendTransactionResponseMessage>(
-        (resolve) => {
-          this.eventBus.once('user:sign-send-transaction-response', resolve);
-        },
-      );
-    this.sendMessage({
-      type: 'user:sign-send-transaction-request',
-      payload,
-    });
-    return responsePromise;
+    return this.sendMessageAndWait(
+      {
+        type: 'user:sign-send-transaction-request',
+        payload,
+      },
+      CanvasInterface.User.SignAndSendTransactionResponseMessageSchema,
+    );
   }
 
   async connectWalletAndSendTransaction(
@@ -173,46 +184,31 @@ export class CanvasClient {
     });
   }
 
-  private sendMessage(message: CanvasInterface.BaseClientMessage) {
-    window.parent.postMessage(message, this.sourceOrigin);
-  }
-
   private handleReceiveMessage = (
     event: MessageEvent<CanvasInterface.BaseHostMessage>,
   ) => {
     const messageData = event.data;
 
-    const parsedMessage =
-      CanvasInterface.HostMessageSchema.safeParse(messageData);
-    if (!parsedMessage.success) {
-      this.handleReceivePluginMessage(messageData);
+    const message = CanvasInterface.parseHostMessage(messageData);
+    if (!message) {
       return;
     }
 
-    const message = parsedMessage.data;
-
-    if (message.type === 'lifecycle:init-response') {
+    const parsedInitMessage =
+      CanvasInterface.Lifecycle.InitResponseMessageSchema.safeParse(
+        messageData,
+      );
+    if (parsedInitMessage.success) {
       if (this.initResponseMessage) {
         throw new CanvasInterface.ClientAlreadyInitializedError();
       }
-      this.initResponseMessage = message;
+      this.initResponseMessage = parsedInitMessage.data;
     } else if (!this.initResponseMessage) {
       throw new CanvasInterface.ClientNotInitializedError();
     }
 
     this.eventBus.emit(message.type, message);
   };
-
-  private handleReceivePluginMessage(
-    messageData: CanvasInterface.BaseHostMessage,
-  ) {
-    for (const plugin of this.plugins) {
-      const success = plugin.handleReceiveMessage(messageData);
-      if (success) {
-        return;
-      }
-    }
-  }
 
   private handleInitialInteraction = () => {
     this.removeInitialInteractionListeners();
@@ -234,14 +230,5 @@ export class CanvasClient {
       width: window.document.body.clientWidth,
       height: window.document.body.clientHeight,
     };
-  }
-
-  private addPlugin(plugin: GenericCanvasPlugin) {
-    const existingPlugin = this.getPlugin(plugin.name);
-    if (existingPlugin) {
-      throw new CanvasInterface.PluginAlreadyExistsError(existingPlugin.name);
-    }
-    plugin.initialize((message) => this.sendMessage(message));
-    this.plugins.push(plugin);
   }
 }

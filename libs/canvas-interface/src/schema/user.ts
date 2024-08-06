@@ -3,6 +3,8 @@ import {
   createClientMessageSchema,
   createFailedResponsePayload,
   createHostMessageSchema,
+  type BaseClientMessage,
+  type BaseHostMessage,
 } from './base';
 
 export const ConnectWalletRequestMessageSchema = createClientMessageSchema(
@@ -79,17 +81,19 @@ export const OpenLnkRequestMessageSchema = createClientMessageSchema(
 );
 
 export interface InitialInteractionRequestMessage
-  extends zod.infer<typeof InitialInteractionRequestMessageSchema> {}
+  extends BaseClientMessage<typeof InitialInteractionRequestMessageSchema> {}
 export interface ResizeRequestMessage
-  extends zod.infer<typeof ResizeRequestMessageSchema> {}
+  extends BaseClientMessage<typeof ResizeRequestMessageSchema> {}
 export interface ConnectWalletRequestMessage
-  extends zod.infer<typeof ConnectWalletRequestMessageSchema> {}
+  extends BaseClientMessage<typeof ConnectWalletRequestMessageSchema> {}
 export interface ConnectWalletResponseMessage
-  extends zod.infer<typeof ConnectWalletResponseMessageSchema> {}
+  extends BaseHostMessage<typeof ConnectWalletResponseMessageSchema> {}
 export type UnsignedTransaction = zod.infer<typeof UnsignedTransactionSchema>;
 export interface SignAndSendTransactionRequestMessage
-  extends zod.infer<typeof SignAndSendTransactionRequestMessageSchema> {}
+  extends BaseClientMessage<
+    typeof SignAndSendTransactionRequestMessageSchema
+  > {}
 export interface SignAndSendTransactionResponseMessage
-  extends zod.infer<typeof SignAndSendTransactionResponseMessageSchema> {}
+  extends BaseHostMessage<typeof SignAndSendTransactionResponseMessageSchema> {}
 export interface OpenLnkRequestMessage
-  extends zod.infer<typeof OpenLnkRequestMessageSchema> {}
+  extends BaseClientMessage<typeof OpenLnkRequestMessageSchema> {}

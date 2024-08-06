@@ -3,9 +3,13 @@ import * as zod from 'zod';
 export {
   createClientMessageSchema,
   createHostMessageSchema,
-  createFailedResponsePayload as createFailedResponsePayload,
+  createFailedResponsePayload,
+  parseClientMessage,
+  parseHostMessage,
   type BaseClientMessage,
   type BaseHostMessage,
+  type BaseClientMessageSchemaType,
+  type BaseHostMessageSchemaType,
 } from './base';
 
 import {
@@ -24,7 +28,7 @@ import {
   OpenLnkRequestMessageSchema,
 } from './user';
 
-export const ClientMessageSchema = zod.union([
+export const CoreClientMessageSchema = zod.union([
   InitRequestMessageSchema,
   InitialInteractionRequestMessageSchema,
   ResizeRequestMessageSchema,
@@ -33,30 +37,32 @@ export const ClientMessageSchema = zod.union([
   OpenLnkRequestMessageSchema,
 ]);
 
-export const HostMessageSchema = zod.union([
+export const CoreHostMessageSchema = zod.union([
   InitResponseMessageSchema,
   CloseMessageSchema,
   ConnectWalletResponseMessageSchema,
   SignAndSendTransactionResponseMessageSchema,
 ]);
 
-const clientMessageTypes = ClientMessageSchema.options.map(
+const coreClientMessageTypes = CoreClientMessageSchema.options.map(
   (m) => m.shape.type.value,
 );
-const ClientMessageTypeSchema = zod.enum([
-  clientMessageTypes[0],
-  ...clientMessageTypes.slice(1),
+const CoreClientMessageTypeSchema = zod.enum([
+  coreClientMessageTypes[0],
+  ...coreClientMessageTypes.slice(1),
 ] as const);
 
-const hostMessageTypes = HostMessageSchema.options.map(
+const coreHostMessageTypes = CoreHostMessageSchema.options.map(
   (m) => m.shape.type.value,
 );
-const HostMessageTypeSchema = zod.enum([
-  hostMessageTypes[0],
-  ...hostMessageTypes.slice(1),
+const CoreHostMessageTypeSchema = zod.enum([
+  coreHostMessageTypes[0],
+  ...coreHostMessageTypes.slice(1),
 ] as const);
 
-export type ClientMessage = zod.infer<typeof ClientMessageSchema>;
-export type ClientMessageType = zod.infer<typeof ClientMessageTypeSchema>;
-export type HostMessage = zod.infer<typeof HostMessageSchema>;
-export type HostMessageType = zod.infer<typeof HostMessageTypeSchema>;
+export type CoreClientMessage = zod.infer<typeof CoreClientMessageSchema>;
+export type CoreClientMessageType = zod.infer<
+  typeof CoreClientMessageTypeSchema
+>;
+export type CoreHostMessage = zod.infer<typeof CoreHostMessageSchema>;
+export type CoreHostMessageType = zod.infer<typeof CoreHostMessageTypeSchema>;

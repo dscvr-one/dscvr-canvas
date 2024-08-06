@@ -38,7 +38,7 @@ export const ConnectWalletResponseMessageSchema = createHostMessageSchema(
       walletSupportedTransactionVersions:
         zod.custom<ReadonlySet<'legacy' | 0>>(),
     }),
-    createFailedResponsePayload(),
+    createFailedResponsePayload(['user-cancelled', 'error']),
   ]),
 );
 
@@ -69,7 +69,7 @@ export const SignAndSendTransactionResponseMessageSchema =
         success: zod.literal(true),
         signedTx: zod.string(),
       }),
-      createFailedResponsePayload(),
+      createFailedResponsePayload(['user-cancelled', 'error']),
     ]),
   );
 

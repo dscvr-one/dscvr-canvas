@@ -1,25 +1,19 @@
 import * as zod from 'zod';
 
 import {
-  // ListRequestMessageSchema,
-  // ConnectRequestMessageSchema,
   DisconnectRequestMessageSchema,
   SendTransactionRequestMessageSchema,
   SignTransactionRequestMessageSchema,
   SignAllTransactionsRequestMessageSchema,
   SignMessageRequestMessageSchema,
-  // ListResponseMessageSchema,
-  // ConnectResponseMessageSchema,
   DisconnectResponseMessageSchema,
   SendTransactionResponseMessageSchema,
   SignTransactionResponseMessageSchema,
   SignAllTransactionsResponseMessageSchema,
   SignMessageResponseMessageSchema,
-} from './wallet';
+} from './schema';
 
 export const ClientMessageSchema = zod.union([
-  // ListRequestMessageSchema,
-  // ConnectRequestMessageSchema,
   DisconnectRequestMessageSchema,
   SendTransactionRequestMessageSchema,
   SignTransactionRequestMessageSchema,
@@ -28,8 +22,6 @@ export const ClientMessageSchema = zod.union([
 ]);
 
 export const HostMessageSchema = zod.union([
-  // ListResponseMessageSchema,
-  // ConnectResponseMessageSchema,
   DisconnectResponseMessageSchema,
   SendTransactionResponseMessageSchema,
   SignTransactionResponseMessageSchema,

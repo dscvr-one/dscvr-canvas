@@ -7,6 +7,8 @@ import {
   createClientMessageSchema,
   createFailedResponsePayload,
   createHostMessageSchema,
+  type BaseClientMessage,
+  type BaseHostMessage,
 } from '@dscvr-one/canvas-interface';
 
 export const WalletNameSchema = zod.object({
@@ -21,40 +23,13 @@ export const WalletSchema = zod.object({
 });
 
 const createFailedWalletResponse = () =>
-  WalletNameSchema.and(createFailedResponsePayload());
-
-// TODO (JM): only if multiple wallets are passed
-// export const ListRequestMessageSchema = createClientMessageSchema(
-//   'solana-wallet:connect-request',
-//   WalletPayloadSchema,
-// );
-
-// export const ListResponseMessageSchema = createHostMessageSchema(
-//   'solana-wallet:connect-response',
-//   zod.union([
-//     zod.array(WalletSchema),
-//     createFailedWalletResponse(),
-//   ]),
-// );
-// export const ConnectRequestMessageSchema = createClientMessageSchema(
-//   'solana-wallet:connect-request',
-//   WalletPayloadSchema,
-// );
-
-// export const ConnectResponseMessageSchema = createHostMessageSchema(
-//   'solana-wallet:connect-response',
-//   zod.union([
-//     WalletSchema.extend({
-//       success: zod.literal(true),
-//       address: zod.string(),
-//     }),
-//     createFailedWalletResponse(),
-//   ]),
-// );
+  WalletNameSchema.and(
+    createFailedResponsePayload(['user-cancelled', 'error']),
+  );
 
 export const DisconnectRequestMessageSchema = createClientMessageSchema(
   'solana-wallet:disconnect-request',
-  WalletNameSchema,
+  WalletNameSchema.and(createFailedResponsePayload(['error'])),
 );
 
 export const DisconnectResponseMessageSchema = createHostMessageSchema(
@@ -143,31 +118,23 @@ export const SignMessageResponseMessageSchema = createHostMessageSchema(
 );
 
 export interface Wallet extends zod.infer<typeof WalletSchema> {}
-// export interface ListRequestMessage
-//   extends zod.infer<typeof ListRequestMessageSchema> {}
-// export interface ListResponseMessage
-//   extends zod.infer<typeof ListResponseMessageSchema> {}
-// export interface ConnectRequestMessage
-//   extends zod.infer<typeof ConnectRequestMessageSchema> {}
-// export interface ConnectResponseMessage
-//   extends zod.infer<typeof ConnectResponseMessageSchema> {}
 export interface DisconnectRequestMessage
-  extends zod.infer<typeof DisconnectRequestMessageSchema> {}
+  extends BaseClientMessage<typeof DisconnectRequestMessageSchema> {}
 export interface DisconnectResponseMessage
-  extends zod.infer<typeof DisconnectResponseMessageSchema> {}
+  extends BaseHostMessage<typeof DisconnectResponseMessageSchema> {}
 export interface SendTransactionRequestMessage
-  extends zod.infer<typeof SendTransactionRequestMessageSchema> {}
+  extends BaseClientMessage<typeof SendTransactionRequestMessageSchema> {}
 export interface SendTransactionResponseMessage
-  extends zod.infer<typeof SendTransactionResponseMessageSchema> {}
+  extends BaseHostMessage<typeof SendTransactionResponseMessageSchema> {}
 export interface SignTransactionRequestMessage
-  extends zod.infer<typeof SignTransactionRequestMessageSchema> {}
+  extends BaseClientMessage<typeof SignTransactionRequestMessageSchema> {}
 export interface SignTransactionResponseMessage
-  extends zod.infer<typeof SignTransactionResponseMessageSchema> {}
+  extends BaseHostMessage<typeof SignTransactionResponseMessageSchema> {}
 export interface SignAllTransactionsRequestMessage
-  extends zod.infer<typeof SignAllTransactionsRequestMessageSchema> {}
+  extends BaseClientMessage<typeof SignAllTransactionsRequestMessageSchema> {}
 export interface SignAllTransactionsResponseMessage
-  extends zod.infer<typeof SignAllTransactionsResponseMessageSchema> {}
+  extends BaseHostMessage<typeof SignAllTransactionsResponseMessageSchema> {}
 export interface SignMessageRequestMessage
-  extends zod.infer<typeof SignMessageRequestMessageSchema> {}
+  extends BaseClientMessage<typeof SignMessageRequestMessageSchema> {}
 export interface SignMessageResponseMessage
-  extends zod.infer<typeof SignMessageResponseMessageSchema> {}
+  extends BaseHostMessage<typeof SignMessageResponseMessageSchema> {}

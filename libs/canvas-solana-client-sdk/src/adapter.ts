@@ -8,6 +8,7 @@ import {
   WalletSignTransactionError,
   type SendTransactionOptions,
   type SupportedTransactionVersions,
+  type WalletError,
   type WalletName,
 } from '@solana/wallet-adapter-base';
 import {
@@ -18,10 +19,9 @@ import {
   type TransactionSignature,
 } from '@solana/web3.js';
 import * as CanvasSolanaInterface from '@dscvr-one/canvas-solana-interface';
+import type { CanvasClient } from '@dscvr-one/canvas-client-sdk';
 import { parseTransaction, serializeTransaction } from './adapter-utils';
-import type { CanvasSolanaPlugin } from './plugin';
 
-// TODO: Discovery process for window injection and discover
 export class CanvasSolanaAdapter extends BaseMessageSignerWalletAdapter {
   private _supportedTransactionVersions: SupportedTransactionVersions;
 
@@ -34,10 +34,7 @@ export class CanvasSolanaAdapter extends BaseMessageSignerWalletAdapter {
   private _publicKey: PublicKey | null = null;
 
   constructor(
-    private eventBus: CanvasSolanaPlugin['eventBus'],
-    private sendCanvasRequest: (
-      message: CanvasSolanaInterface.ClientMessage,
-    ) => void,
+    private canvasClient: CanvasClient,
     wallet: CanvasSolanaInterface.Wallet & { address?: string },
   ) {
     super();
@@ -86,36 +83,30 @@ export class CanvasSolanaAdapter extends BaseMessageSignerWalletAdapter {
 
   async autoConnect(): Promise<void> {
     throw new Error('Cannot auto-connect in this context');
-    // return this.connect();
   }
 
   async connect(): Promise<void> {
     throw new Error('Cannot connect in this context');
-    // this.canvasClient.connectWallet // chainId?
-    // this._publicKey = this.parsePublicKey(response.untrusted.address);
   }
 
   async disconnect(): Promise<void> {
     if (this.connected) {
       try {
-        const responsePromise =
-          this.getHostResponse<CanvasSolanaInterface.DisconnectResponseMessage>(
-            'solana-wallet:disconnect-response',
-          );
-        this.sendCanvasRequest({
-          type: 'solana-wallet:disconnect-request',
-          payload: {
-            name: this._name,
+        const response = await this.canvasClient.sendMessageAndWait(
+          {
+            type: 'solana-wallet:disconnect-request',
+            payload: {
+              name: this.name,
+            },
           },
-        });
-        const response = await responsePromise;
+          CanvasSolanaInterface.DisconnectResponseMessageSchema,
+        );
         if (!response.untrusted.success) {
-          // TODO: reason?
           throw new Error(response.untrusted.error);
         }
-        // TODO: if connect is implemented, call this for other wallets when one is connected
         this._disconnected();
-      } catch (error: any) {
+      } catch (e: unknown) {
+        const error = e as Error;
         this.emit('error', new WalletDisconnectionError(error?.message, error));
       }
     }
@@ -132,27 +123,26 @@ export class CanvasSolanaAdapter extends BaseMessageSignerWalletAdapter {
       const rpcEndpoint = connection.rpcEndpoint;
       const unsignedTx = serializeTransaction(transaction);
 
-      const responsePromise =
-        this.getHostResponse<CanvasSolanaInterface.SendTransactionResponseMessage>(
-          'solana-wallet:send-transaction-response',
-        );
-      this.sendCanvasRequest({
-        type: 'solana-wallet:send-transaction-request',
-        payload: {
-          name: this._name,
-          rpcEndpoint,
-          unsignedTx,
-          options,
+      const response = await this.canvasClient.sendMessageAndWait(
+        {
+          type: 'solana-wallet:send-transaction-request',
+          payload: {
+            name: this.name,
+            rpcEndpoint,
+            unsignedTx,
+            options,
+          },
         },
-      });
-      const response = await responsePromise;
+        CanvasSolanaInterface.SendTransactionResponseMessageSchema,
+      );
+
       if (!response.untrusted.success) {
-        // TODO: reason?
         throw new Error(response.untrusted.error);
       }
 
       return response.untrusted.signedTx;
-    } catch (error: any) {
+    } catch (e: unknown) {
+      const error = e as WalletError;
       this.emit('error', error);
       throw new WalletSendTransactionError(error?.message, error);
     }
@@ -163,25 +153,24 @@ export class CanvasSolanaAdapter extends BaseMessageSignerWalletAdapter {
   ): Promise<T> {
     try {
       const unsignedTx = serializeTransaction(transaction);
-      const responsePromise =
-        this.getHostResponse<CanvasSolanaInterface.SignTransactionResponseMessage>(
-          'solana-wallet:sign-transaction-response',
-        );
-      this.sendCanvasRequest({
-        type: 'solana-wallet:sign-transaction-request',
-        payload: {
-          name: this._name,
-          unsignedTx,
+      const response = await this.canvasClient.sendMessageAndWait(
+        {
+          type: 'solana-wallet:sign-transaction-request',
+          payload: {
+            name: this.name,
+            unsignedTx,
+          },
         },
-      });
-      const response = await responsePromise;
+        CanvasSolanaInterface.SignTransactionResponseMessageSchema,
+      );
+
       if (!response.untrusted.success) {
-        // TODO: reason?
         throw new Error(response.untrusted.error);
       }
 
       return parseTransaction(response.untrusted.signedTx) as T;
-    } catch (error: any) {
+    } catch (e: unknown) {
+      const error = e as WalletError;
       this.emit('error', error);
       throw new WalletSignTransactionError(error?.message, error);
     }
@@ -192,26 +181,24 @@ export class CanvasSolanaAdapter extends BaseMessageSignerWalletAdapter {
   ): Promise<T[]> {
     try {
       const unsignedTxs = transactions.map((t) => serializeTransaction(t));
-      const responsePromise =
-        this.getHostResponse<CanvasSolanaInterface.SignAllTransactionsResponseMessage>(
-          'solana-wallet:sign-all-transactions-response',
-        );
-      this.sendCanvasRequest({
-        type: 'solana-wallet:sign-all-transactions-request',
-        payload: {
-          name: this._name,
-          unsignedTxs,
+      const response = await this.canvasClient.sendMessageAndWait(
+        {
+          type: 'solana-wallet:sign-all-transactions-request',
+          payload: {
+            name: this.name,
+            unsignedTxs,
+          },
         },
-      });
-      const response = await responsePromise;
+        CanvasSolanaInterface.SignAllTransactionsResponseMessageSchema,
+      );
 
       if (!response.untrusted.success) {
-        // TODO: reason?
         throw new Error(response.untrusted.error);
       }
 
       return response.untrusted.signedTxs.map(parseTransaction) as T[];
-    } catch (error: any) {
+    } catch (e: unknown) {
+      const error = e as WalletError;
       this.emit('error', error);
       throw new WalletSignTransactionError(error?.message, error);
     }
@@ -219,26 +206,24 @@ export class CanvasSolanaAdapter extends BaseMessageSignerWalletAdapter {
 
   async signMessage(message: Uint8Array): Promise<Uint8Array> {
     try {
-      const responsePromise =
-        this.getHostResponse<CanvasSolanaInterface.SignMessageResponseMessage>(
-          'solana-wallet:sign-message-response',
-        );
-      this.sendCanvasRequest({
-        type: 'solana-wallet:sign-message-request',
-        payload: {
-          name: this._name,
-          unsignedMessage: message,
+      const response = await this.canvasClient.sendMessageAndWait(
+        {
+          type: 'solana-wallet:sign-message-request',
+          payload: {
+            name: this.name,
+            unsignedMessage: message,
+          },
         },
-      });
-      const response = await responsePromise;
+        CanvasSolanaInterface.SignMessageResponseMessageSchema,
+      );
 
       if (!response.untrusted.success) {
-        // TODO: reason?
         throw new Error(response.untrusted.error);
       }
 
       return response.untrusted.signedMessage;
-    } catch (error: any) {
+    } catch (e: unknown) {
+      const error = e as WalletError;
       this.emit('error', error);
       throw new WalletSignMessageError(error?.message, error);
     }
@@ -252,22 +237,11 @@ export class CanvasSolanaAdapter extends BaseMessageSignerWalletAdapter {
   private parsePublicKey(address: string) {
     try {
       return new PublicKey(address);
-    } catch (error: any) {
+    } catch (e: unknown) {
+      const error = e as WalletError;
       const newError = new WalletPublicKeyError(error?.message, error);
       this.emit('error', newError);
       throw newError;
     }
-  }
-
-  private getHostResponse<T extends CanvasSolanaInterface.HostMessage>(
-    responseType: T['type'],
-  ): Promise<T> {
-    return new Promise<T>((resolve) => {
-      this.eventBus.once(responseType, (message: T) => {
-        if (message.untrusted.name === this.name) {
-          resolve(message);
-        }
-      });
-    });
   }
 }

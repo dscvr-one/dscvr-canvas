@@ -1,7 +1,9 @@
 import * as zod from 'zod';
 
+export type CanvasMessageType = `${string}:${string}`;
+
 export type BaseClientMessageSchemaType<
-  T extends string = string,
+  T extends CanvasMessageType = CanvasMessageType,
   D extends zod.ZodTypeAny | undefined = undefined,
 > = D extends zod.ZodTypeAny
   ? zod.ZodObject<{
@@ -13,7 +15,7 @@ export type BaseClientMessageSchemaType<
     }>;
 
 export type BaseHostMessageSchemaType<
-  T extends string = string,
+  T extends CanvasMessageType = CanvasMessageType,
   D extends zod.ZodTypeAny | undefined = undefined,
 > = D extends zod.ZodTypeAny
   ? zod.ZodObject<{
@@ -28,28 +30,28 @@ export type BaseHostMessageSchemaType<
 
 export type BaseClientMessage<
   T extends BaseClientMessageSchemaType = BaseClientMessageSchemaType<
-    string,
+    CanvasMessageType,
     zod.ZodTypeAny | undefined
   >,
 > = zod.infer<T>;
 export type BaseHostMessage<
   T extends BaseHostMessageSchemaType = BaseHostMessageSchemaType<
-    string,
+    CanvasMessageType,
     zod.ZodTypeAny | undefined
   >,
 > = zod.infer<T>;
 
-export function createClientMessageSchema<T extends string>(
+export function createClientMessageSchema<T extends CanvasMessageType>(
   type: T,
 ): BaseClientMessageSchemaType<T>;
 
 export function createClientMessageSchema<
-  T extends string,
+  T extends CanvasMessageType,
   D extends zod.ZodTypeAny,
 >(type: T, payloadSchema: D): BaseClientMessageSchemaType<T, D>;
 
 export function createClientMessageSchema<
-  T extends string,
+  T extends CanvasMessageType,
   D extends zod.ZodTypeAny,
 >(
   type: T,
@@ -67,17 +69,17 @@ export function createClientMessageSchema<
   });
 }
 
-export function createHostMessageSchema<T extends string>(
+export function createHostMessageSchema<T extends CanvasMessageType>(
   type: T,
 ): BaseHostMessageSchemaType<T>;
 
 export function createHostMessageSchema<
-  T extends string,
+  T extends CanvasMessageType,
   D extends zod.ZodTypeAny,
 >(type: T, payloadSchema: D): BaseHostMessageSchemaType<T, D>;
 
 export function createHostMessageSchema<
-  T extends string,
+  T extends CanvasMessageType,
   D extends zod.ZodTypeAny,
 >(
   type: T,
@@ -97,18 +99,24 @@ export function createHostMessageSchema<
   });
 }
 
-export const createFailedResponsePayload = () =>
-  zod.object({
+export const createFailedResponsePayload = <
+  U extends string,
+  T extends readonly [U, ...U[]],
+>(
+  reasons: T,
+) => {
+  return zod.object({
     success: zod.literal(false),
-    errorReason: zod.enum(['user-cancelled', 'error']),
+    errorReason: zod.enum<string, T>(reasons),
     error: zod.string().optional(),
   });
+};
 
 export const parseClientMessage = (
-  message: any,
+  message: unknown,
 ): BaseClientMessage | undefined => {
   const clientMessageSchema = zod.object({
-    type: zod.string(),
+    type: zod.custom<CanvasMessageType>(),
     payload: zod.any().optional(),
   });
 
@@ -121,10 +129,10 @@ export const parseClientMessage = (
 };
 
 export const parseHostMessage = (
-  message: any,
+  message: unknown,
 ): BaseClientMessage | undefined => {
   const hostMessageSchema = zod.object({
-    type: zod.string(),
+    type: zod.custom<CanvasMessageType>(),
     untrusted: zod.any().optional(),
     trustedBytes: zod.string(),
     zod: zod.custom<{ test: string }>(),

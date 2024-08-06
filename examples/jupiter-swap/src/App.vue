@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue';
-import { CanvasInterface, CanvasClient } from '@dscvr-one/canvas-client-sdk';
-import { CanvasSolanaPlugin } from '@dscvr-one/canvas-solana-plugin';
+import { CanvasInterface } from '@dscvr-one/canvas-client-sdk';
+import { CanvasSolanaClient } from '@dscvr-one/canvas-solana-client-sdk';
 import type {
   Adapter,
   MessageSignerWalletAdapter,
@@ -11,43 +11,27 @@ import type {
 import { jupiterRpcEndpoint } from './api/jupiter';
 import { validateHostMessage } from './api/dscvr';
 
-let canvasClient: CanvasClient | undefined;
-// TODO: with the adapter approach this is not necessary
-const chainId = 'solana:101';
-const resizeObserver = new ResizeObserver(() => canvasClient?.resize());
+let canvasSolanaClient: CanvasSolanaClient | undefined;
+const resizeObserver = new ResizeObserver(() => canvasSolanaClient?.canvasClient.resize());
 const isReady = ref(false);
 const jupiterPlaceholderRef = ref<HTMLDivElement>();
 const user = ref<CanvasInterface.Lifecycle.User>();
 const content = ref<CanvasInterface.Lifecycle.Content>();
 
 const initJupiterWidget = () => {
-  if (!jupiterPlaceholderRef.value || !canvasClient) return;
+  if (!jupiterPlaceholderRef.value || !canvasSolanaClient) return;
   window.Jupiter.init({
     displayMode: 'integrated',
     integratedTargetId: 'jupiter-widget',
     endpoint: jupiterRpcEndpoint,
     enableWalletPassthrough: true,
-    onFormUpdate: () => canvasClient?.resize(),
-    onScreenUpdate: () => canvasClient?.resize(),
+    onFormUpdate: () => canvasSolanaClient?.canvasClient.resize(),
+    onScreenUpdate: () => canvasSolanaClient?.canvasClient.resize(),
     onRequestConnectWallet: async () => {
-      if (!canvasClient) {
+      if (!canvasSolanaClient) {
         throw new Error('Canvas client is not initialized');
       }
-      const response = await canvasClient.connectWallet(chainId);
-      // canvasClient.signAndSendTransaction -> adapter.sendTransaction
-      //  - our rpc connection vs their rpc connection
-      //  - blowfish dialog
-
-      // adapter.signTransaction -> does not pass the connection
-      // jupiter is the one that sendTransaction
-      if (!response?.untrusted.success) {
-        throw new Error('Failed to connect wallet');
-      }
-      // TODO: Discovery process
-      const adapter = canvasClient.getSolanaWalletAdapter(response);
-      if (!adapter) {
-        throw new Error('Failed to get wallet adapter');
-      }
+      const adapter = await canvasSolanaClient.connectWallet();
       syncProps(adapter);
       adapter.on('disconnect', () => {
         syncProps(adapter);
@@ -88,9 +72,9 @@ const syncProps = (adapter: Adapter) => {
 };
 
 const start = async () => {
-  if (!canvasClient) return;
-  const response = await canvasClient.ready();
-  isReady.value = canvasClient.isReady;
+  if (!canvasSolanaClient) return;
+  const response = await canvasSolanaClient.canvasClient.ready();
+  isReady.value = canvasSolanaClient.canvasClient.isReady;
   const isValidResponse = await validateHostMessage(response);
   if (!isValidResponse) return;
   if (response) {
@@ -99,19 +83,19 @@ const start = async () => {
     content.value = response.untrusted.content;
   }
   initJupiterWidget();
-  canvasClient?.resize();
+  canvasSolanaClient?.canvasClient.resize();
 };
 
 onMounted(() => {
   resizeObserver.observe(document.body);
-  canvasClient = new CanvasClient();
+  canvasSolanaClient = new CanvasSolanaClient();
   start();
 });
 
 onUnmounted(() => {
   resizeObserver?.disconnect();
-  if (canvasClient) {
-    canvasClient.destroy();
+  if (canvasSolanaClient) {
+    canvasSolanaClient.destroy();
   }
 });
 </script>

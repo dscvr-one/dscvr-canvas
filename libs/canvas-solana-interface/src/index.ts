@@ -22,7 +22,7 @@ export {
   type SignTransactionRequestMessage,
   type SignTransactionResponseMessage,
   type Wallet,
-} from './schema/wallet';
+} from './schema/schema';
 export {
   ClientMessageSchema,
   HostMessageSchema,

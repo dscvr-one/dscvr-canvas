@@ -177,6 +177,7 @@ const submit = () => {
     <div class="flex flex-col md:flex-row gap-6 items-center">
       <button
         v-for="clusterItem in clusterList"
+        :key="clusterItem.cluster"
         type="submit"
         class="text-white font-bold py-2 px-4 border-b-4 rounded"
         :class="

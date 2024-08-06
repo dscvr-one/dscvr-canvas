@@ -1,11 +1,10 @@
 import { CSSProperties } from 'react';
 import { Root } from 'react-dom/client';
 import { createStore } from 'jotai';
-import { Wallet, WalletContextState } from '@jup-ag/wallet-adapter';
+import { WalletContextState } from '@jup-ag/wallet-adapter';
 import { PublicKey, TransactionError } from '@solana/web3.js';
 import { QuoteResponseMeta, SwapMode, SwapResult } from '@jup-ag/react-hook';
 import { PlatformFeeAndAccounts } from '@jup-ag/common';
-import EventEmitter from 'events';
 
 declare global {
   interface Window {

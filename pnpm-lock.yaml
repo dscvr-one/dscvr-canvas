@@ -129,6 +129,9 @@ importers:
       buffer:
         specifier: ^6.0.3
         version: 6.0.3
+      solana-wallets-vue:
+        specifier: ^0.6.1
+        version: 0.6.1(@solana/web3.js@1.95.1)(bs58@5.0.0)(react-native@0.74.3)(vue@3.4.32)
       vue:
         specifier: ^3.4.29
         version: 3.4.32(typescript@5.4.5)
@@ -3112,7 +3115,6 @@ packages:
       merge-options: 3.0.4
       react-native: 0.74.3(@babel/core@7.24.9)(@babel/preset-env@7.24.8)(react@18.3.1)
     dev: false
-    optional: true
 
   /@react-native-community/cli-clean@13.6.9:
     resolution: {integrity: sha512-7Dj5+4p9JggxuVNOjPbduZBAP1SUgNhLKVw5noBUzT/3ZpUZkDM+RCSwyoyg8xKWoE4OrdUAXwAFlMcFDPKykA==}
@@ -3684,6 +3686,19 @@ packages:
       - debug
     dev: true
 
+  /@solana-mobile/mobile-wallet-adapter-protocol-web3js@1.0.1(@solana/web3.js@1.95.1)(react-native@0.74.3):
+    resolution: {integrity: sha512-wbmL0AgqGpc6nHAN9IzShKxvKskpj4+8qhD8FbNmauRogfYBcgbz1rlZOmmpp93hI6lDpP/hnlmafsCN50U3YQ==}
+    peerDependencies:
+      '@solana/web3.js': ^1.58.0
+    dependencies:
+      '@solana-mobile/mobile-wallet-adapter-protocol': 1.0.1(react-native@0.74.3)
+      '@solana/web3.js': 1.95.1
+      bs58: 5.0.0
+      js-base64: 3.7.7
+    transitivePeerDependencies:
+      - react-native
+    dev: false
+
   /@solana-mobile/mobile-wallet-adapter-protocol-web3js@2.1.3(@solana/wallet-adapter-base@0.9.23)(@solana/web3.js@1.95.1)(react-native@0.74.3)(react@18.3.1):
     resolution: {integrity: sha512-IEvPzp4m39sWTS3gybbVfk1WQ5Bx9TrGlthtRlVw1BJPvjbmT6lTcnndgXp7HmMkz5e6cc8fwJWp3EKx5upAug==}
     peerDependencies:
@@ -3697,6 +3712,14 @@ packages:
       - '@solana/wallet-adapter-base'
       - react
       - react-native
+    dev: false
+
+  /@solana-mobile/mobile-wallet-adapter-protocol@1.0.1(react-native@0.74.3):
+    resolution: {integrity: sha512-T+xroGLYaYeI8TXy85oNul2m1k/oF9dAW7eRy/MF9up1EQ5SPL5KWFICQfV2gy87jBZd1y0k0M2GayVN7QdQpA==}
+    peerDependencies:
+      react-native: '>0.69'
+    dependencies:
+      react-native: 0.74.3(@babel/core@7.24.9)(@babel/preset-env@7.24.8)(react@18.3.1)
     dev: false
 
   /@solana-mobile/mobile-wallet-adapter-protocol@2.1.3(@solana/wallet-adapter-base@0.9.23)(@solana/web3.js@1.95.1)(bs58@5.0.0)(react-native@0.74.3)(react@18.3.1):
@@ -3715,6 +3738,20 @@ packages:
       - '@solana/wallet-adapter-base'
       - bs58
       - react
+    dev: false
+
+  /@solana-mobile/wallet-adapter-mobile@1.0.1(@solana/web3.js@1.95.1)(react-native@0.74.3):
+    resolution: {integrity: sha512-5Zp+SOku0NEpeQN6m0JHpJys9L5UJSrFGCPmrUphStPqC6uVxU6ugMo+aAbzpq+e+3Z4XLXwMwfgssI4YTa+SA==}
+    peerDependencies:
+      '@solana/web3.js': ^1.58.0
+    dependencies:
+      '@react-native-async-storage/async-storage': 1.24.0(react-native@0.74.3)
+      '@solana-mobile/mobile-wallet-adapter-protocol-web3js': 1.0.1(@solana/web3.js@1.95.1)(react-native@0.74.3)
+      '@solana/wallet-adapter-base': 0.9.23(@solana/web3.js@1.95.1)
+      '@solana/web3.js': 1.95.1
+      js-base64: 3.7.7
+    transitivePeerDependencies:
+      - react-native
     dev: false
 
   /@solana-mobile/wallet-adapter-mobile@2.1.3(@solana/web3.js@1.95.1)(react-native@0.74.3)(react@18.3.1):
@@ -4291,6 +4328,10 @@ packages:
     resolution: {integrity: sha512-c/I8ZRb51j+pYGAu5CrFMRxqZ2ke4y2grEBO5AUjgSkSk+qT2Ea+OdWElz/OiMf5MNpn2b17kuVBwZLQJXzihw==}
     dev: false
 
+  /@types/web-bluetooth@0.0.16:
+    resolution: {integrity: sha512-oh8q2Zc32S6gd/j50GowEjKLoOVOwHP/bWVjKJInBwQqdOYMdPrf1oVlelTlyfFK3CKxL1uahMDAr+vy8T7yMQ==}
+    dev: false
+
   /@types/ws@7.4.7:
     resolution: {integrity: sha512-JQbbmxZTZehdc2iszGKs5oC3NFnjeay7mtAWrdt7qNtAVK0g19muApzAy4bm9byz79xa2ZnO/BOBC2R8RC5Lww==}
     dependencies:
@@ -4601,6 +4642,31 @@ packages:
   /@vue/tsconfig@0.5.1:
     resolution: {integrity: sha512-VcZK7MvpjuTPx2w6blwnwZAu5/LgBUtejFOi3pPGQFXQN5Ela03FUtd2Qtg4yWGGissVL0dr6Ro1LfOFh+PCuQ==}
     dev: true
+
+  /@vueuse/core@9.13.0(vue@3.4.32):
+    resolution: {integrity: sha512-pujnclbeHWxxPRqXWmdkKV5OX4Wk4YeK7wusHqRwU0Q7EFusHoqNA/aPhB6KCh9hEqJkLAJo7bb0Lh9b+OIVzw==}
+    dependencies:
+      '@types/web-bluetooth': 0.0.16
+      '@vueuse/metadata': 9.13.0
+      '@vueuse/shared': 9.13.0(vue@3.4.32)
+      vue-demi: 0.14.10(vue@3.4.32)
+    transitivePeerDependencies:
+      - '@vue/composition-api'
+      - vue
+    dev: false
+
+  /@vueuse/metadata@9.13.0:
+    resolution: {integrity: sha512-gdU7TKNAUVlXXLbaF+ZCfte8BjRJQWPCa2J55+7/h+yDtzw3vOoGQDRXzI6pyKyo6bXFT5/QoPE4hAknExjRLQ==}
+    dev: false
+
+  /@vueuse/shared@9.13.0(vue@3.4.32):
+    resolution: {integrity: sha512-UrnhU+Cnufu4S6JLCPZnkWh0WwZGUp72ktOF2DFptMlOs3TOdVv8xJN53zhHGARmVOsz5KqOls09+J1NR6sBKw==}
+    dependencies:
+      vue-demi: 0.14.10(vue@3.4.32)
+    transitivePeerDependencies:
+      - '@vue/composition-api'
+      - vue
+    dev: false
 
   /@wallet-standard/app@0.0.0-20240703212708:
     resolution: {integrity: sha512-9dbm+DtuhD48u0pMXs0vairkCvN1PGzhb2SWCeYNT3bmaYGkv7XfkpNLFf8O8xngm0WdM0pbP9WRfxaJfEIN6w==}
@@ -7309,7 +7375,6 @@ packages:
     engines: {node: '>=8'}
     requiresBuild: true
     dev: false
-    optional: true
 
   /is-plain-object@2.0.4:
     resolution: {integrity: sha512-h5PpgXkWitc38BBMYawTYMWJHFZJVnBquFE57xFpjB8pJFiF6gZ+bU+WyI/yqXiFR5mdLsgYNaPe8uao6Uv9Og==}
@@ -8032,7 +8097,6 @@ packages:
     dependencies:
       is-plain-obj: 2.1.0
     dev: false
-    optional: true
 
   /merge-stream@2.0.0:
     resolution: {integrity: sha512-abv/qOcuPfk3URPfDzmZU1LKmuw8kT+0nIHvKrKgFrwifol/doWcdA4ZqsWQ8ENrFKkd67Mfpo/LovbIUsbt3w==}
@@ -10021,6 +10085,26 @@ packages:
       dot-case: 3.0.4
       tslib: 2.6.3
 
+  /solana-wallets-vue@0.6.1(@solana/web3.js@1.95.1)(bs58@5.0.0)(react-native@0.74.3)(vue@3.4.32):
+    resolution: {integrity: sha512-PWiLKinU0QRAWqTQdFFYo2dsiv6oBB7bBmQbCK9z0W6TtzDa+YgZ94EYeBfPnDPK7iCR338h1qpV2xTk8vpvFw==}
+    peerDependencies:
+      '@solana/web3.js': ^1.61.0
+      vue: ^3.2.25
+    dependencies:
+      '@solana-mobile/wallet-adapter-mobile': 1.0.1(@solana/web3.js@1.95.1)(react-native@0.74.3)
+      '@solana/wallet-adapter-base': 0.9.23(@solana/web3.js@1.95.1)
+      '@solana/wallet-standard-wallet-adapter-base': 1.1.2(@solana/web3.js@1.95.1)(bs58@5.0.0)
+      '@solana/web3.js': 1.95.1
+      '@vueuse/core': 9.13.0(vue@3.4.32)
+      '@wallet-standard/app': 1.0.1
+      '@wallet-standard/base': 1.0.1
+      vue: 3.4.32(typescript@5.4.5)
+    transitivePeerDependencies:
+      - '@vue/composition-api'
+      - bs58
+      - react-native
+    dev: false
+
   /source-map-js@1.2.0:
     resolution: {integrity: sha512-itJW8lvSA0TXEphiRoawsCksnlf8SyvmFzIhltqAHluXd88pkCd+cXJVHTDwdCr0IzwptSm035IHQktUu1QUMg==}
     engines: {node: '>=0.10.0'}
@@ -10926,6 +11010,21 @@ packages:
   /vscode-uri@3.0.8:
     resolution: {integrity: sha512-AyFQ0EVmsOZOlAnxoFOGOq1SQDWAB7C6aqMGS23svWAllfOaxbuFvcT8D1i8z3Gyn8fraVeZNNmN6e9bxxXkKw==}
     dev: true
+
+  /vue-demi@0.14.10(vue@3.4.32):
+    resolution: {integrity: sha512-nMZBOwuzabUO0nLgIcc6rycZEebF6eeUfaiQx9+WSk8e29IbLvPU9feI6tqW4kTo3hvoYAJkMh8n8D0fuISphg==}
+    engines: {node: '>=12'}
+    hasBin: true
+    requiresBuild: true
+    peerDependencies:
+      '@vue/composition-api': ^1.0.0-rc.1
+      vue: ^3.0.0-0 || ^2.6.0
+    peerDependenciesMeta:
+      '@vue/composition-api':
+        optional: true
+    dependencies:
+      vue: 3.4.32(typescript@5.4.5)
+    dev: false
 
   /vue-eslint-parser@9.4.3(eslint@8.57.0):
     resolution: {integrity: sha512-2rYRLWlIpaiN8xbPiDyXZXRgLGOtWxERV7ND5fFAv5qo1D2N9Fu9MNajBNc6o13lZ+24DAWCkQCvj4klgmcITg==}

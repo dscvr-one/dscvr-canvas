@@ -1,17 +1,18 @@
 import base58, * as bs58 from 'bs58';
-import type {
-  SolanaChain,
-  SolanaSignAndSendTransactionFeature,
-  SolanaSignAndSendTransactionMethod,
-  SolanaSignAndSendTransactionOutput,
-  SolanaSignMessageFeature,
-  SolanaSignMessageMethod,
-  SolanaSignMessageOutput,
-  SolanaSignTransactionFeature,
-  SolanaSignTransactionMethod,
-  SolanaSignTransactionOutput,
+import {
+  getEndpointForChain,
+  SOLANA_CHAINS,
+  type SolanaChain,
+  type SolanaSignAndSendTransactionFeature,
+  type SolanaSignAndSendTransactionMethod,
+  type SolanaSignAndSendTransactionOutput,
+  type SolanaSignMessageFeature,
+  type SolanaSignMessageMethod,
+  type SolanaSignMessageOutput,
+  type SolanaSignTransactionFeature,
+  type SolanaSignTransactionMethod,
+  type SolanaSignTransactionOutput,
 } from '@solana/wallet-standard';
-import { getEndpointForChain, SOLANA_CHAINS } from '@solana/wallet-standard';
 import { PublicKey } from '@solana/web3.js';
 import type {
   StandardConnectFeature,
@@ -22,9 +23,10 @@ import type {
   Wallet,
   WalletAccount,
 } from '@wallet-standard/core';
-import { AbstractWallet } from './abstract-wallet';
 import type { CanvasClient } from '@dscvr-one/canvas-client-sdk';
 import * as CanvasSolanaInterface from '@dscvr-one/canvas-solana-interface';
+import { AbstractWallet } from './abstract-wallet';
+import { validateHostMessage } from './api/dscvr';
 
 export class CanvasSolanaWallet extends AbstractWallet implements Wallet {
   #underlyingWalletName: string | undefined;
@@ -93,10 +95,10 @@ export class CanvasSolanaWallet extends AbstractWallet implements Wallet {
     const canvasResponse = await this.canvasClient.connectWallet(
       this.chains[0],
     );
-    // TODO: if(!validateHostMessage(canvasResponse)) throw new Error('invalid message');
+    if (!validateHostMessage(canvasResponse))
+      throw new Error('invalid message');
     if (!canvasResponse.untrusted.success) return { accounts: this.accounts };
     this.#underlyingWalletName = canvasResponse.untrusted.walletName;
-    console.log('this.#underlyingWalletName', this.#underlyingWalletName);
     const account: WalletAccount = {
       address: canvasResponse.untrusted.address,
       publicKey: new PublicKey(canvasResponse.untrusted.address).toBytes(),
@@ -121,7 +123,8 @@ export class CanvasSolanaWallet extends AbstractWallet implements Wallet {
       },
       CanvasSolanaInterface.DisconnectResponseMessageSchema,
     );
-    // TODO: if(!validateHostMessage(canvasResponse)) throw new Error('invalid message');
+    if (!validateHostMessage(canvasResponse))
+      throw new Error('invalid message');
     if (!canvasResponse.untrusted.success) {
       throw new Error(canvasResponse.untrusted.error);
     }
@@ -155,7 +158,8 @@ export class CanvasSolanaWallet extends AbstractWallet implements Wallet {
         },
         CanvasSolanaInterface.SendTransactionResponseMessageSchema,
       );
-      // TODO: if(!validateHostMessage(canvasResponse)) throw new Error('invalid message');
+      if (!validateHostMessage(canvasResponse))
+        throw new Error('invalid message');
       if (!canvasResponse.untrusted.success) {
         throw new Error(canvasResponse.untrusted.error);
       }
@@ -169,8 +173,9 @@ export class CanvasSolanaWallet extends AbstractWallet implements Wallet {
   };
 
   #signTransaction: SolanaSignTransactionMethod = async (...inputs) => {
-    const outputs: SolanaSignTransactionOutput[] = [];
-    // TODO: no need for signAllTransactions?
+    if (inputs.length === 0) return [];
+
+    const unsignedTxs: string[] = [];
     for (const { transaction, account, chain } of inputs) {
       if (!account.features.includes('solana:signTransaction'))
         throw new Error('invalid feature');
@@ -178,31 +183,48 @@ export class CanvasSolanaWallet extends AbstractWallet implements Wallet {
       if (chain && !this.chains.includes(chain as SolanaChain))
         throw new Error('invalid chain');
 
-      const canvasResponse = await this.canvasClient.sendMessageAndWait(
-        {
-          type: 'solana-wallet:sign-transaction-request',
-          payload: {
-            name: this.#underlyingWalletName,
-            unsignedTx: base58.encode(transaction),
+      unsignedTxs.push(bs58.encode(transaction));
+    }
+    const singleTransation = unsignedTxs.length === 1;
+    const canvasResponse = singleTransation
+      ? await this.canvasClient.sendMessageAndWait(
+          {
+            type: 'solana-wallet:sign-transaction-request',
+            payload: {
+              name: this.#underlyingWalletName,
+              unsignedTx: unsignedTxs[0],
+            },
           },
-        },
-        CanvasSolanaInterface.SignTransactionResponseMessageSchema,
-      );
-      // TODO: if(!validateHostMessage(canvasResponse)) throw new Error('invalid message');
+          CanvasSolanaInterface.SignTransactionResponseMessageSchema,
+        )
+      : await this.canvasClient.sendMessageAndWait(
+          {
+            type: 'solana-wallet:sign-all-transactions-request',
+            payload: {
+              name: this.#underlyingWalletName,
+              unsignedTxs,
+            },
+          },
+          CanvasSolanaInterface.SignAllTransactionsResponseMessageSchema,
+        );
+    if (!validateHostMessage(canvasResponse))
+      throw new Error('invalid message');
 
-      if (canvasResponse.untrusted.name !== this.#underlyingWalletName) {
-        throw new Error('Unexpected wallet name');
-      }
-
-      if (!canvasResponse.untrusted.success) {
-        throw new Error(canvasResponse.untrusted.error);
-      }
-
-      outputs.push({
-        signedTransaction: bs58.decode(canvasResponse.untrusted.signedTx),
-      });
+    if (canvasResponse.untrusted.name !== this.#underlyingWalletName) {
+      throw new Error('Unexpected wallet name');
     }
 
+    if (!canvasResponse.untrusted.success) {
+      throw new Error(canvasResponse.untrusted.error);
+    }
+
+    const signedTxs =
+      'signedTx' in canvasResponse.untrusted
+        ? [canvasResponse.untrusted.signedTx]
+        : canvasResponse.untrusted.signedTxs;
+    const outputs: SolanaSignTransactionOutput[] = signedTxs.map(
+      (signedTx) => ({ signedTransaction: bs58.decode(signedTx) }),
+    );
     return outputs;
   };
 
@@ -222,7 +244,8 @@ export class CanvasSolanaWallet extends AbstractWallet implements Wallet {
         },
         CanvasSolanaInterface.SignMessageResponseMessageSchema,
       );
-      // TODO: if(!validateHostMessage(canvasResponse)) throw new Error('invalid message');
+      if (!validateHostMessage(canvasResponse))
+        throw new Error('invalid message');
 
       if (canvasResponse.untrusted.name !== this.#underlyingWalletName) {
         throw new Error('Unexpected wallet name');

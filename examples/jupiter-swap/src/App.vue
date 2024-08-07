@@ -2,6 +2,7 @@
 import { onMounted, onUnmounted, ref } from 'vue';
 import { CanvasClient, CanvasInterface } from '@dscvr-one/canvas-client-sdk';
 import { registerCanvasSolanaWallet } from '@dscvr-one/canvas-solana-adapter';
+import { useWallet } from 'solana-wallets-vue';
 import { jupiterRpcEndpoint } from './api/jupiter';
 import { validateHostMessage } from './api/dscvr';
 
@@ -12,64 +13,29 @@ const jupiterPlaceholderRef = ref<HTMLDivElement>();
 const user = ref<CanvasInterface.Lifecycle.User>();
 const content = ref<CanvasInterface.Lifecycle.Content>();
 
+const { wallets } = useWallet();
+
 const initJupiterWidget = () => {
   if (!jupiterPlaceholderRef.value || !canvasClient) return;
   window.Jupiter.init({
     displayMode: 'integrated',
     integratedTargetId: 'jupiter-widget',
     endpoint: jupiterRpcEndpoint,
+    autoConnect: false,
     // passthroughWalletContextState: getWalletContext(),
     onFormUpdate: () => canvasClient?.resize(),
     onScreenUpdate: () => canvasClient?.resize()
     // Do this to avoid showing their own discovery process
     // enableWalletPassthrough: true,
     // onRequestConnectWallet: async () => {
-    //   if (!canvasClient || !canvasSolanaAdapter) {
+    //   if (!canvasClient) {
     //     throw new Error('Canvas client is not initialized');
     //   }
-    //   await canvasSolanaAdapter.connect();
-    //   window.Jupiter.syncProps({ passthroughWalletContextState: getWalletContext() });
+    //   const solanaWallet = wallets.value.find((w) => w.adapter.name === 'Dscvr Canvas Wallet');
+    //   await solanaWallet?.adapter.connect();
     // }
   });
-
-  // canvasSolanaAdapter.on('disconnect', () => {
-  //   window.Jupiter.syncProps({ passthroughWalletContextState: getWalletContext() });
-  // });
 };
-
-// const getWalletContext = (): WalletContextState | undefined => {
-//   if (!canvasSolanaAdapter) return;
-//   console.log('getWalletContext', canvasSolanaAdapter);
-//   const adapter: Adapter = canvasSolanaAdapter;
-//   return {
-//     publicKey: adapter.publicKey,
-//     autoConnect: false,
-//     disconnecting: false,
-//     connected: adapter.connected,
-//     wallet: {
-//       readyState: adapter.readyState,
-//       adapter
-//     },
-//     wallets: [
-//       {
-//         adapter,
-//         readyState: adapter.readyState
-//       }
-//     ],
-//     connecting: false,
-//     select: () => {},
-//     connect: () => adapter.connect(),
-//     disconnect: () => adapter.disconnect(),
-//     sendTransaction: (...params) => adapter.sendTransaction(...params),
-//     signTransaction: (...params) => (adapter as SignerWalletAdapter).signTransaction(...params),
-//     signAllTransactions: (...params) =>
-//       (adapter as SignerWalletAdapter).signAllTransactions(...params),
-//     signMessage: (...params) => (adapter as MessageSignerWalletAdapter).signMessage(...params),
-//     signIn: () => {
-//       throw new Error('Not implemented');
-//     }
-//   };
-// };
 
 const start = async () => {
   if (!canvasClient) return;

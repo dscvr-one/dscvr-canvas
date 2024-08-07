@@ -199,7 +199,6 @@ export class CanvasClient {
     event: MessageEvent<CanvasInterface.BaseHostMessage>,
   ) => {
     const messageData = event.data;
-    console.log('messageData', messageData);
 
     const message = CanvasInterface.parseHostMessage(messageData);
     if (!message) {

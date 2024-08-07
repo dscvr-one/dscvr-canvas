@@ -27,21 +27,21 @@ const initJupiterWidget = () => {
     endpoint: jupiterRpcEndpoint,
     // passthroughWalletContextState: getWalletContext(),
     onFormUpdate: () => canvasClient?.resize(),
-    onScreenUpdate: () => canvasClient?.resize(),
+    onScreenUpdate: () => canvasClient?.resize()
     // Do this to avoid showing their own discovery process
-    enableWalletPassthrough: true,
-    onRequestConnectWallet: async () => {
-      if (!canvasClient || !canvasSolanaAdapter) {
-        throw new Error('Canvas client is not initialized');
-      }
-      await canvasSolanaAdapter.connect();
-      window.Jupiter.syncProps({ passthroughWalletContextState: getWalletContext() });
-    }
+    // enableWalletPassthrough: true,
+    // onRequestConnectWallet: async () => {
+    //   if (!canvasClient || !canvasSolanaAdapter) {
+    //     throw new Error('Canvas client is not initialized');
+    //   }
+    //   await canvasSolanaAdapter.connect();
+    //   window.Jupiter.syncProps({ passthroughWalletContextState: getWalletContext() });
+    // }
   });
 
-  canvasSolanaAdapter.on('disconnect', () => {
-    window.Jupiter.syncProps({ passthroughWalletContextState: getWalletContext() });
-  });
+  // canvasSolanaAdapter.on('disconnect', () => {
+  //   window.Jupiter.syncProps({ passthroughWalletContextState: getWalletContext() });
+  // });
 };
 
 const getWalletContext = (): WalletContextState | undefined => {

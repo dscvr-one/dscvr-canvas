@@ -379,6 +379,9 @@ importers:
       '@solana/wallet-adapter-base':
         specifier: ^0.9.23
         version: 0.9.23(@solana/web3.js@1.95.1)
+      '@solana/wallet-standard':
+        specifier: ^1.1.2
+        version: 1.1.2(@solana/wallet-adapter-base@0.9.23)(@solana/web3.js@1.95.1)(bs58@5.0.0)(react@18.3.1)
       '@solana/wallet-standard-wallet-adapter-base':
         specifier: ^1.1.2
         version: 1.1.2(@solana/web3.js@1.95.1)(bs58@5.0.0)
@@ -386,6 +389,9 @@ importers:
         specifier: ^1.91.4
         version: 1.95.1
       '@wallet-standard/base':
+        specifier: 0.0.0-20240703212708
+        version: 0.0.0-20240703212708
+      '@wallet-standard/core':
         specifier: 0.0.0-20240703212708
         version: 0.0.0-20240703212708
       '@wallet-standard/wallet':
@@ -4596,6 +4602,13 @@ packages:
     resolution: {integrity: sha512-VcZK7MvpjuTPx2w6blwnwZAu5/LgBUtejFOi3pPGQFXQN5Ela03FUtd2Qtg4yWGGissVL0dr6Ro1LfOFh+PCuQ==}
     dev: true
 
+  /@wallet-standard/app@0.0.0-20240703212708:
+    resolution: {integrity: sha512-9dbm+DtuhD48u0pMXs0vairkCvN1PGzhb2SWCeYNT3bmaYGkv7XfkpNLFf8O8xngm0WdM0pbP9WRfxaJfEIN6w==}
+    engines: {node: '>=16'}
+    dependencies:
+      '@wallet-standard/base': 0.0.0-20240703212708
+    dev: false
+
   /@wallet-standard/app@1.0.1:
     resolution: {integrity: sha512-LnLYq2Vy2guTZ8GQKKSXQK3+FRGPil75XEdkZqE6fiLixJhZJoJa5hT7lXxwe0ykVTt9LEThdTbOpT7KadS26Q==}
     engines: {node: '>=16'}
@@ -4613,6 +4626,17 @@ packages:
     engines: {node: '>=16'}
     dev: false
 
+  /@wallet-standard/core@0.0.0-20240703212708:
+    resolution: {integrity: sha512-KvoLY7XHk9r++bjggJGhYlORUxe8NxJZ7uPyaypvtZf9nJSviZtawWtAVXq+B+YP7EGKF6gW0HuS3mjYfXO2gg==}
+    engines: {node: '>=16'}
+    dependencies:
+      '@wallet-standard/app': 0.0.0-20240703212708
+      '@wallet-standard/base': 0.0.0-20240703212708
+      '@wallet-standard/errors': 0.0.0-20240703212708
+      '@wallet-standard/features': 0.0.0-20240703212708
+      '@wallet-standard/wallet': 0.0.0-20240703212708
+    dev: false
+
   /@wallet-standard/core@1.0.3:
     resolution: {integrity: sha512-Jb33IIjC1wM1HoKkYD7xQ6d6PZ8EmMZvyc8R7dFgX66n/xkvksVTW04g9yLvQXrLFbcIjHrCxW6TXMhvpsAAzg==}
     engines: {node: '>=16'}
@@ -4621,6 +4645,22 @@ packages:
       '@wallet-standard/base': 1.0.1
       '@wallet-standard/features': 1.0.3
       '@wallet-standard/wallet': 1.0.1
+    dev: false
+
+  /@wallet-standard/errors@0.0.0-20240703212708:
+    resolution: {integrity: sha512-Bord90VSpPAD30ukC3h8MEZYzv0BZoRnG+DNWcsm8MOuivsZzSmWFcnoxX4ErZgKknxaCRT8qLc3+3+k4QVL3w==}
+    engines: {node: '>=16'}
+    hasBin: true
+    dependencies:
+      chalk: 5.3.0
+      commander: 12.1.0
+    dev: false
+
+  /@wallet-standard/features@0.0.0-20240703212708:
+    resolution: {integrity: sha512-b5U7UKzlI2j+VnNZCWiEXewA4jHGcbD7xVHr91/NYSnGs5sos8Y7YXpnf+07ib/LwInd/X00g3/qzz9wRtv+Ew==}
+    engines: {node: '>=16'}
+    dependencies:
+      '@wallet-standard/base': 0.0.0-20240703212708
     dev: false
 
   /@wallet-standard/features@1.0.3:

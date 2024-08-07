@@ -35,9 +35,11 @@
     "@dscvr-one/canvas-client-sdk": "^1.0.0",
     "@dscvr-one/canvas-solana-interface": "^1.0.0",
     "@solana/wallet-adapter-base": "^0.9.23",
+    "@solana/wallet-standard": "^1.1.2",
     "@solana/wallet-standard-wallet-adapter-base": "^1.1.2",
     "@solana/web3.js": "^1.91.4",
     "@wallet-standard/base": "0.0.0-20240703212708",
+    "@wallet-standard/core": "0.0.0-20240703212708",
     "@wallet-standard/wallet": "0.0.0-20240703212708",
     "bs58": "^5.0.0"
   },

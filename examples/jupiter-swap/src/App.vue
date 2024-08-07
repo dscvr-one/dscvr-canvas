@@ -1,17 +1,10 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue';
 import { CanvasClient, CanvasInterface } from '@dscvr-one/canvas-client-sdk';
-import { CanvasSolanaAdapter, installCanvasSolanaAdapter } from '@dscvr-one/canvas-solana-adapter';
-import type {
-  Adapter,
-  MessageSignerWalletAdapter,
-  SignerWalletAdapter,
-  WalletContextState
-} from '@jup-ag/wallet-adapter';
+import { registerCanvasSolanaWallet } from '@dscvr-one/canvas-solana-adapter';
 import { jupiterRpcEndpoint } from './api/jupiter';
 import { validateHostMessage } from './api/dscvr';
 
-let canvasSolanaAdapter: CanvasSolanaAdapter | undefined;
 let canvasClient: CanvasClient | undefined;
 const resizeObserver = new ResizeObserver(() => canvasClient?.resize());
 const isReady = ref(false);
@@ -20,7 +13,7 @@ const user = ref<CanvasInterface.Lifecycle.User>();
 const content = ref<CanvasInterface.Lifecycle.Content>();
 
 const initJupiterWidget = () => {
-  if (!jupiterPlaceholderRef.value || !canvasClient || !canvasSolanaAdapter) return;
+  if (!jupiterPlaceholderRef.value || !canvasClient) return;
   window.Jupiter.init({
     displayMode: 'integrated',
     integratedTargetId: 'jupiter-widget',
@@ -44,39 +37,39 @@ const initJupiterWidget = () => {
   // });
 };
 
-const getWalletContext = (): WalletContextState | undefined => {
-  if (!canvasSolanaAdapter) return;
-  console.log('getWalletContext', canvasSolanaAdapter);
-  const adapter: Adapter = canvasSolanaAdapter;
-  return {
-    publicKey: adapter.publicKey,
-    autoConnect: false,
-    disconnecting: false,
-    connected: adapter.connected,
-    wallet: {
-      readyState: adapter.readyState,
-      adapter
-    },
-    wallets: [
-      {
-        adapter,
-        readyState: adapter.readyState
-      }
-    ],
-    connecting: false,
-    select: () => {},
-    connect: () => adapter.connect(),
-    disconnect: () => adapter.disconnect(),
-    sendTransaction: (...params) => adapter.sendTransaction(...params),
-    signTransaction: (...params) => (adapter as SignerWalletAdapter).signTransaction(...params),
-    signAllTransactions: (...params) =>
-      (adapter as SignerWalletAdapter).signAllTransactions(...params),
-    signMessage: (...params) => (adapter as MessageSignerWalletAdapter).signMessage(...params),
-    signIn: () => {
-      throw new Error('Not implemented');
-    }
-  };
-};
+// const getWalletContext = (): WalletContextState | undefined => {
+//   if (!canvasSolanaAdapter) return;
+//   console.log('getWalletContext', canvasSolanaAdapter);
+//   const adapter: Adapter = canvasSolanaAdapter;
+//   return {
+//     publicKey: adapter.publicKey,
+//     autoConnect: false,
+//     disconnecting: false,
+//     connected: adapter.connected,
+//     wallet: {
+//       readyState: adapter.readyState,
+//       adapter
+//     },
+//     wallets: [
+//       {
+//         adapter,
+//         readyState: adapter.readyState
+//       }
+//     ],
+//     connecting: false,
+//     select: () => {},
+//     connect: () => adapter.connect(),
+//     disconnect: () => adapter.disconnect(),
+//     sendTransaction: (...params) => adapter.sendTransaction(...params),
+//     signTransaction: (...params) => (adapter as SignerWalletAdapter).signTransaction(...params),
+//     signAllTransactions: (...params) =>
+//       (adapter as SignerWalletAdapter).signAllTransactions(...params),
+//     signMessage: (...params) => (adapter as MessageSignerWalletAdapter).signMessage(...params),
+//     signIn: () => {
+//       throw new Error('Not implemented');
+//     }
+//   };
+// };
 
 const start = async () => {
   if (!canvasClient) return;
@@ -96,7 +89,7 @@ const start = async () => {
 onMounted(() => {
   resizeObserver.observe(document.body);
   canvasClient = new CanvasClient();
-  canvasSolanaAdapter = installCanvasSolanaAdapter(canvasClient);
+  registerCanvasSolanaWallet(canvasClient);
   start();
 });
 

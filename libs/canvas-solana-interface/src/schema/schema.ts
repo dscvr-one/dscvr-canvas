@@ -29,7 +29,7 @@ const createFailedWalletResponse = () =>
 
 export const DisconnectRequestMessageSchema = createClientMessageSchema(
   'solana-wallet:disconnect-request',
-  WalletNameSchema.and(createFailedResponsePayload(['error'])),
+  WalletNameSchema,
 );
 
 export const DisconnectResponseMessageSchema = createHostMessageSchema(
@@ -38,7 +38,7 @@ export const DisconnectResponseMessageSchema = createHostMessageSchema(
     WalletNameSchema.extend({
       success: zod.literal(true),
     }),
-    createFailedWalletResponse(),
+    WalletNameSchema.and(createFailedResponsePayload(['error'])),
   ]),
 );
 

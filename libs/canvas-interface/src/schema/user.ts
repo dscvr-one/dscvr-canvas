@@ -35,8 +35,9 @@ export const ConnectWalletResponseMessageSchema = createHostMessageSchema(
       walletName: zod.string(),
       walletIcon: zod.string(),
       walletUrl: zod.string(),
-      walletSupportedTransactionVersions:
-        zod.custom<ReadonlySet<'legacy' | 0>>(),
+      walletSupportedTransactionVersions: zod
+        .custom<ReadonlySet<'legacy' | 0>>()
+        .optional(),
     }),
     createFailedResponsePayload(['user-cancelled', 'error']),
   ]),
@@ -80,6 +81,19 @@ export const OpenLnkRequestMessageSchema = createClientMessageSchema(
   }),
 );
 
+export const ContentReactionResponseMessageSchema = createHostMessageSchema(
+  'user:content-reaction-response',
+  zod.union([
+    zod.object({
+      status: zod.literal('reacted'),
+      reaction: zod.string(),
+    }),
+    zod.object({
+      status: zod.literal('cleared'),
+    }),
+  ]),
+);
+
 export interface InitialInteractionRequestMessage
   extends BaseClientMessage<typeof InitialInteractionRequestMessageSchema> {}
 export interface ResizeRequestMessage
@@ -97,3 +111,6 @@ export interface SignAndSendTransactionResponseMessage
   extends BaseHostMessage<typeof SignAndSendTransactionResponseMessageSchema> {}
 export interface OpenLnkRequestMessage
   extends BaseClientMessage<typeof OpenLnkRequestMessageSchema> {}
+
+export interface ContentReactionResponseMessage
+  extends BaseHostMessage<typeof ContentReactionResponseMessageSchema> {}

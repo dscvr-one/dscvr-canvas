@@ -14,8 +14,8 @@ export {
   type BaseHostMessage,
   type CoreClientMessage,
   type CoreClientMessageType,
-  type CoreHostMessage as HostMessage,
-  type CoreHostMessageType as HostMessageType,
+  type CoreHostMessage,
+  type CoreHostMessageType,
 } from './schema';
 
 export {

@@ -21,6 +21,9 @@ const start = async () => {
     user.value = response.untrusted.user;
     content.value = response.untrusted.content;
   }
+  canvasClient.onReaction((reaction) => {
+    console.log('Reaction:', reaction);
+  });
 };
 
 const openUserProfile = () => {

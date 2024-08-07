@@ -34,6 +34,7 @@ export type BaseClientMessage<
     zod.ZodTypeAny | undefined
   >,
 > = zod.infer<T>;
+
 export type BaseHostMessage<
   T extends BaseHostMessageSchemaType = BaseHostMessageSchemaType<
     CanvasMessageType,

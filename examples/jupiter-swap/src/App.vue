@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue';
-import { CanvasInterface } from '@dscvr-one/canvas-client-sdk';
-import { CanvasSolanaClient } from '@dscvr-one/canvas-solana-client-sdk';
+import { CanvasClient, CanvasInterface } from '@dscvr-one/canvas-client-sdk';
+import { CanvasSolanaAdapter, installCanvasSolanaAdapter } from '@dscvr-one/canvas-solana-adapter';
 import type {
   Adapter,
   MessageSignerWalletAdapter,
@@ -11,37 +11,44 @@ import type {
 import { jupiterRpcEndpoint } from './api/jupiter';
 import { validateHostMessage } from './api/dscvr';
 
-let canvasSolanaClient: CanvasSolanaClient | undefined;
-const resizeObserver = new ResizeObserver(() => canvasSolanaClient?.canvasClient.resize());
+let canvasSolanaAdapter: CanvasSolanaAdapter | undefined;
+let canvasClient: CanvasClient | undefined;
+const resizeObserver = new ResizeObserver(() => canvasClient?.resize());
 const isReady = ref(false);
 const jupiterPlaceholderRef = ref<HTMLDivElement>();
 const user = ref<CanvasInterface.Lifecycle.User>();
 const content = ref<CanvasInterface.Lifecycle.Content>();
 
 const initJupiterWidget = () => {
-  if (!jupiterPlaceholderRef.value || !canvasSolanaClient) return;
+  if (!jupiterPlaceholderRef.value || !canvasClient || !canvasSolanaAdapter) return;
   window.Jupiter.init({
     displayMode: 'integrated',
     integratedTargetId: 'jupiter-widget',
     endpoint: jupiterRpcEndpoint,
+    // passthroughWalletContextState: getWalletContext(),
+    onFormUpdate: () => canvasClient?.resize(),
+    onScreenUpdate: () => canvasClient?.resize(),
+    // Do this to avoid showing their own discovery process
     enableWalletPassthrough: true,
-    onFormUpdate: () => canvasSolanaClient?.canvasClient.resize(),
-    onScreenUpdate: () => canvasSolanaClient?.canvasClient.resize(),
     onRequestConnectWallet: async () => {
-      if (!canvasSolanaClient) {
+      if (!canvasClient || !canvasSolanaAdapter) {
         throw new Error('Canvas client is not initialized');
       }
-      const adapter = await canvasSolanaClient.connectWallet();
-      syncProps(adapter);
-      adapter.on('disconnect', () => {
-        syncProps(adapter);
-      });
+      await canvasSolanaAdapter.connect();
+      window.Jupiter.syncProps({ passthroughWalletContextState: getWalletContext() });
     }
+  });
+
+  canvasSolanaAdapter.on('disconnect', () => {
+    window.Jupiter.syncProps({ passthroughWalletContextState: getWalletContext() });
   });
 };
 
-const syncProps = (adapter: Adapter) => {
-  const passthroughWalletContextState: WalletContextState = {
+const getWalletContext = (): WalletContextState | undefined => {
+  if (!canvasSolanaAdapter) return;
+  console.log('getWalletContext', canvasSolanaAdapter);
+  const adapter: Adapter = canvasSolanaAdapter;
+  return {
     publicKey: adapter.publicKey,
     autoConnect: false,
     disconnecting: false,
@@ -50,14 +57,15 @@ const syncProps = (adapter: Adapter) => {
       readyState: adapter.readyState,
       adapter
     },
-    wallets: [],
+    wallets: [
+      {
+        adapter,
+        readyState: adapter.readyState
+      }
+    ],
     connecting: false,
-    select: () => {
-      throw new Error('Not implemented');
-    },
-    connect: () => {
-      throw new Error('Not implemented');
-    },
+    select: () => {},
+    connect: () => adapter.connect(),
     disconnect: () => adapter.disconnect(),
     sendTransaction: (...params) => adapter.sendTransaction(...params),
     signTransaction: (...params) => (adapter as SignerWalletAdapter).signTransaction(...params),
@@ -68,13 +76,12 @@ const syncProps = (adapter: Adapter) => {
       throw new Error('Not implemented');
     }
   };
-  window.Jupiter.syncProps({ passthroughWalletContextState });
 };
 
 const start = async () => {
-  if (!canvasSolanaClient) return;
-  const response = await canvasSolanaClient.canvasClient.ready();
-  isReady.value = canvasSolanaClient.canvasClient.isReady;
+  if (!canvasClient) return;
+  const response = await canvasClient.ready();
+  isReady.value = canvasClient.isReady;
   const isValidResponse = await validateHostMessage(response);
   if (!isValidResponse) return;
   if (response) {
@@ -83,19 +90,20 @@ const start = async () => {
     content.value = response.untrusted.content;
   }
   initJupiterWidget();
-  canvasSolanaClient?.canvasClient.resize();
+  canvasClient?.resize();
 };
 
 onMounted(() => {
   resizeObserver.observe(document.body);
-  canvasSolanaClient = new CanvasSolanaClient();
+  canvasClient = new CanvasClient();
+  canvasSolanaAdapter = installCanvasSolanaAdapter(canvasClient);
   start();
 });
 
 onUnmounted(() => {
   resizeObserver?.disconnect();
-  if (canvasSolanaClient) {
-    canvasSolanaClient.destroy();
+  if (canvasClient) {
+    canvasClient.destroy();
   }
 });
 </script>

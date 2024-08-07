@@ -118,6 +118,17 @@ export class CanvasClient {
     });
   }
 
+  onReaction(
+    callback: (
+      reaction: CanvasInterface.User.ContentReactionResponseMessage,
+    ) => void,
+  ) {
+    this.subscribe(
+      CanvasInterface.User.ContentReactionResponseMessageSchema,
+      callback,
+    );
+  }
+
   connectWallet(
     chainId: string,
   ): Promise<CanvasInterface.User.ConnectWalletResponseMessage> {

@@ -26,6 +26,7 @@ import {
   SignAndSendTransactionRequestMessageSchema,
   SignAndSendTransactionResponseMessageSchema,
   OpenLnkRequestMessageSchema,
+  ContentReactionResponseMessageSchema,
 } from './user';
 
 export const CoreClientMessageSchema = zod.union([
@@ -42,6 +43,7 @@ export const CoreHostMessageSchema = zod.union([
   CloseMessageSchema,
   ConnectWalletResponseMessageSchema,
   SignAndSendTransactionResponseMessageSchema,
+  ContentReactionResponseMessageSchema,
 ]);
 
 const coreClientMessageTypes = CoreClientMessageSchema.options.map(

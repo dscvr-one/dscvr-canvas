@@ -108,9 +108,9 @@ importers:
       '@dscvr-one/canvas-client-sdk':
         specifier: ^1.0.0
         version: link:../../libs/canvas-client-sdk
-      '@dscvr-one/canvas-solana-client-sdk':
+      '@dscvr-one/canvas-solana-adapter':
         specifier: workspace:^
-        version: link:../../libs/canvas-solana-client-sdk
+        version: link:../../libs/canvas-solana-adapter
       '@jup-ag/common':
         specifier: 6.0.0-beta.9
         version: 6.0.0-beta.9(@solana/web3.js@1.95.1)(bn.js@5.2.1)(fastestsmallesttextencoderdecoder@1.0.22)
@@ -368,17 +368,32 @@ importers:
         specifier: ^5.3.3
         version: 5.4.5
 
-  libs/canvas-solana-interface:
+  libs/canvas-solana-adapter:
     dependencies:
-      '@dscvr-one/canvas-interface':
+      '@dscvr-one/canvas-client-sdk':
         specifier: ^1.0.0
-        version: link:../canvas-interface
+        version: link:../canvas-client-sdk
+      '@dscvr-one/canvas-solana-interface':
+        specifier: ^1.0.0
+        version: link:../canvas-solana-interface
       '@solana/wallet-adapter-base':
         specifier: ^0.9.23
         version: 0.9.23(@solana/web3.js@1.95.1)
-      zod:
-        specifier: ^3.23.8
-        version: 3.23.8
+      '@solana/wallet-standard-wallet-adapter-base':
+        specifier: ^1.1.2
+        version: 1.1.2(@solana/web3.js@1.95.1)(bs58@5.0.0)
+      '@solana/web3.js':
+        specifier: ^1.91.4
+        version: 1.95.1
+      '@wallet-standard/base':
+        specifier: 0.0.0-20240703212708
+        version: 0.0.0-20240703212708
+      '@wallet-standard/wallet':
+        specifier: 0.0.0-20240703212708
+        version: 0.0.0-20240703212708
+      bs58:
+        specifier: ^5.0.0
+        version: 5.0.0
     devDependencies:
       '@commitlint/cli':
         specifier: ^19.1.0
@@ -386,6 +401,9 @@ importers:
       '@commitlint/config-conventional':
         specifier: ^19.1.0
         version: 19.2.2
+      '@types/node':
+        specifier: ^20
+        version: 20.14.10
       '@typescript-eslint/eslint-plugin':
         specifier: ^7.3.1
         version: 7.16.1(@typescript-eslint/parser@7.16.1)(eslint@8.57.0)(typescript@5.4.5)
@@ -423,23 +441,17 @@ importers:
         specifier: ^5.3.3
         version: 5.4.5
 
-  libs/canvas-solana-client-sdk:
+  libs/canvas-solana-interface:
     dependencies:
-      '@dscvr-one/canvas-client-sdk':
+      '@dscvr-one/canvas-interface':
         specifier: ^1.0.0
-        version: link:../canvas-client-sdk
-      '@dscvr-one/canvas-solana-interface':
-        specifier: ^1.0.0
-        version: link:../canvas-solana-interface
+        version: link:../canvas-interface
       '@solana/wallet-adapter-base':
         specifier: ^0.9.23
         version: 0.9.23(@solana/web3.js@1.95.1)
-      '@solana/web3.js':
-        specifier: ^1.91.4
-        version: 1.95.1
-      bs58:
-        specifier: ^5.0.0
-        version: 5.0.0
+      zod:
+        specifier: ^3.23.8
+        version: 3.23.8
     devDependencies:
       '@commitlint/cli':
         specifier: ^19.1.0
@@ -447,9 +459,6 @@ importers:
       '@commitlint/config-conventional':
         specifier: ^19.1.0
         version: 19.2.2
-      '@types/node':
-        specifier: ^20
-        version: 20.14.10
       '@typescript-eslint/eslint-plugin':
         specifier: ^7.3.1
         version: 7.16.1(@typescript-eslint/parser@7.16.1)(eslint@8.57.0)(typescript@5.4.5)
@@ -4594,6 +4603,11 @@ packages:
       '@wallet-standard/base': 1.0.1
     dev: false
 
+  /@wallet-standard/base@0.0.0-20240703212708:
+    resolution: {integrity: sha512-D9z2nlH3wyR6NZBVjX2csAMAvSZvhXujWQkyx/5fhZ5QsHnbcrt0g21u231kIC7zuAzmH3tjQ0/xyR/2bfvjgA==}
+    engines: {node: '>=16'}
+    dev: false
+
   /@wallet-standard/base@1.0.1:
     resolution: {integrity: sha512-1To3ekMfzhYxe0Yhkpri+Fedq0SYcfrOfJi3vbLjMwF2qiKPjTGLwZkf2C9ftdQmxES+hmxhBzTwF4KgcOwf8w==}
     engines: {node: '>=16'}
@@ -4614,6 +4628,13 @@ packages:
     engines: {node: '>=16'}
     dependencies:
       '@wallet-standard/base': 1.0.1
+    dev: false
+
+  /@wallet-standard/wallet@0.0.0-20240703212708:
+    resolution: {integrity: sha512-iTPr84ki4BZvEx4YPl/svDZ90rwj6teyAV9ip9p/q5IVLYCofzZOdUKnLu3R81O0rnnIeeDs8i6q4YkzHgtfYA==}
+    engines: {node: '>=16'}
+    dependencies:
+      '@wallet-standard/base': 0.0.0-20240703212708
     dev: false
 
   /@wallet-standard/wallet@1.0.1:

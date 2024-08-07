@@ -1,4 +1,4 @@
-# @dscvr-one/canvas-solana-client-sdk
+# @dscvr-one/canvas-solana-adapter
 
 This SDK can be used by DSCVR Canvas Applications to communicate with the DSCVR Frontend.
 
@@ -13,13 +13,13 @@ Current features include:
 Install with your favorite package manager:
 
 ```bash
-npm install @dscvr-one/canvas-solana-client-sdk
+npm install @dscvr-one/canvas-solana-adapter
 ```
 
 yarn
 
 ```bash
-yarn add @dscvr-one/canvas-solana-client-sdk
+yarn add @dscvr-one/canvas-solana-adapter
 ```
 
 ## Usage
@@ -32,7 +32,7 @@ To use the SDK:
 import {
   CanvasInterface,
   CanvasClient,
-} from '@dscvr-one/canvas-solana-client-sdk';
+} from '@dscvr-one/canvas-solana-adapter';
 ```
 
 2. Instantiate the `CanvasClient`:

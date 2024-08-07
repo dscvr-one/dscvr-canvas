@@ -1,5 +1,5 @@
 {
-  "name": "@dscvr-one/canvas-solana-client-sdk",
+  "name": "@dscvr-one/canvas-solana-adapter",
   "version": "1.0.1",
   "description": "SDK for iframes apps to connect to dscvr host using postMessage rpc",
   "type": "module",
@@ -8,7 +8,7 @@
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts"
   },
-  "homepage": "https://github.com/dscvr-one/dscvr-canvas/tree/main/libs/canvas-solana-client-sdk#readme",
+  "homepage": "https://github.com/dscvr-one/dscvr-canvas/tree/main/libs/canvas-solana-adapter#readme",
   "files": [
     "dist"
   ],
@@ -35,7 +35,10 @@
     "@dscvr-one/canvas-client-sdk": "^1.0.0",
     "@dscvr-one/canvas-solana-interface": "^1.0.0",
     "@solana/wallet-adapter-base": "^0.9.23",
+    "@solana/wallet-standard-wallet-adapter-base": "^1.1.2",
     "@solana/web3.js": "^1.91.4",
+    "@wallet-standard/base": "0.0.0-20240703212708",
+    "@wallet-standard/wallet": "0.0.0-20240703212708",
     "bs58": "^5.0.0"
   },
   "license": "MIT",

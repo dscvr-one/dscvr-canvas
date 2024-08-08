@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue';
-import { CanvasInterface, CanvasClient } from '@dscvr-one/canvas-client-sdk';
+import { CanvasInterface } from '@dscvr-one/canvas-client-sdk';
 import UserInfo from './components/UserInfo.vue';
 import ContentInfo from './components/ContentInfo.vue';
+import ContentReaction from './components/ContentReaction.vue';
 import { validateHostMessage } from './api/dscvr';
+import { canvasClient } from './canvas-client';
 
-let canvasClient: CanvasClient | undefined;
 const isReady = ref(false);
 const user = ref<CanvasInterface.Lifecycle.User>();
 const content = ref<CanvasInterface.Lifecycle.Content>();
-const resizeObserver = new ResizeObserver(() => canvasClient?.resize());
+const contentReaction = ref<string>();
+const resizeObserver = new ResizeObserver(() => canvasClient.resize());
 
 const start = async () => {
   if (!canvasClient) return;
@@ -21,8 +23,13 @@ const start = async () => {
     user.value = response.untrusted.user;
     content.value = response.untrusted.content;
   }
-  canvasClient.onReaction((reaction) => {
-    console.log('Reaction:', reaction);
+  canvasClient.onContentReaction((reaction) => {
+    if (!validateHostMessage(reaction)) return;
+    if (reaction.untrusted.status === 'cleared') {
+      contentReaction.value = '';
+    } else {
+      contentReaction.value = reaction.untrusted.reaction;
+    }
   });
 };
 
@@ -38,7 +45,6 @@ const setBodyHeight = (height: number) => {
 
 onMounted(() => {
   resizeObserver.observe(document.body);
-  canvasClient = new CanvasClient();
   start();
 });
 
@@ -56,6 +62,7 @@ onUnmounted(() => {
     <template v-else>
       <user-info v-if="user" :user="user" @open="openUserProfile" />
       <content-info v-if="content" :content="content" />
+      <content-reaction :reaction="contentReaction" />
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <button
           v-for="height in [1000, 1500, 0]"

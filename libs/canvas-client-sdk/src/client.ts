@@ -118,7 +118,7 @@ export class CanvasClient {
     });
   }
 
-  onReaction(
+  onContentReaction(
     callback: (
       reaction: CanvasInterface.User.ContentReactionResponseMessage,
     ) => void,

@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue';
-import { CanvasInterface, CanvasClient } from '@dscvr-one/canvas-client-sdk';
+import { CanvasInterface } from '@dscvr-one/canvas-client-sdk';
 import TransactionForm from './components/TransactionForm.vue';
 import { validateHostMessage } from './api/dscvr';
+import { canvasClient } from './canvas-client';
 
-let canvasClient: CanvasClient | undefined;
 const isReady = ref(false);
 const user = ref<CanvasInterface.Lifecycle.User>();
 const content = ref<CanvasInterface.Lifecycle.Content>();
@@ -24,7 +24,6 @@ const start = async () => {
 };
 
 onMounted(() => {
-  canvasClient = new CanvasClient();
   start();
 });
 

@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue';
-import { CanvasClient, CanvasInterface } from '@dscvr-one/canvas-client-sdk';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { CanvasInterface } from '@dscvr-one/canvas-client-sdk';
 import { registerCanvasSolanaWallet } from '@dscvr-one/canvas-solana-adapter';
 import { useWallet } from 'solana-wallets-vue';
 import { jupiterRpcEndpoint } from './api/jupiter';
 import { validateHostMessage } from './api/dscvr';
+import { canvasClient } from './canvas-client';
 
-let canvasClient: CanvasClient | undefined;
-const resizeObserver = new ResizeObserver(() => canvasClient?.resize());
+const resizeObserver = new ResizeObserver(() => canvasClient.resize());
 const isReady = ref(false);
 const jupiterPlaceholderRef = ref<HTMLDivElement>();
 const user = ref<CanvasInterface.Lifecycle.User>();
@@ -15,16 +15,18 @@ const content = ref<CanvasInterface.Lifecycle.Content>();
 
 const { wallets } = useWallet();
 
+const installedWallets = computed(() => wallets.value.filter((w) => w.readyState === 'Installed'));
+
 const initJupiterWidget = () => {
-  if (!jupiterPlaceholderRef.value || !canvasClient) return;
+  if (!jupiterPlaceholderRef.value) return;
   window.Jupiter.init({
     displayMode: 'integrated',
     integratedTargetId: 'jupiter-widget',
     endpoint: jupiterRpcEndpoint,
     autoConnect: false,
     // passthroughWalletContextState: getWalletContext(),
-    onFormUpdate: () => canvasClient?.resize(),
-    onScreenUpdate: () => canvasClient?.resize()
+    onFormUpdate: () => canvasClient.resize(),
+    onScreenUpdate: () => canvasClient.resize()
     // Do this to avoid showing their own discovery process
     // enableWalletPassthrough: true,
     // onRequestConnectWallet: async () => {
@@ -49,12 +51,11 @@ const start = async () => {
     content.value = response.untrusted.content;
   }
   initJupiterWidget();
-  canvasClient?.resize();
+  canvasClient.resize();
 };
 
 onMounted(() => {
   resizeObserver.observe(document.body);
-  canvasClient = new CanvasClient();
   registerCanvasSolanaWallet(canvasClient);
   start();
 });
@@ -68,6 +69,12 @@ onUnmounted(() => {
 </script>
 
 <template>
+  <p>Installed Wallets:</p>
+  <ul class="flex flex-col gap-4">
+    <li v-for="w in installedWallets" :key="w.adapter.name">
+      {{ w.adapter.name }}
+    </li>
+  </ul>
   <p v-if="!isReady" class="text-center">Loading...</p>
   <div ref="jupiterPlaceholderRef" id="jupiter-widget" />
 </template>

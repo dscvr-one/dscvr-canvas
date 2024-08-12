@@ -16,6 +16,7 @@ import {
   openLnkRequestSchema,
   createPostRequestSchema,
   createPostResponseSchema,
+  contentReactionResponseSchema,
 } from './user';
 import type { BaseClientMessage, BaseHostMessage } from './base';
 
@@ -35,6 +36,7 @@ const coreHostSchemas = [
   connectWalletResponseSchema,
   signAndSendTransactionResponseSchema,
   createPostResponseSchema,
+  contentReactionResponseSchema,
 ] as const;
 
 export type CoreClientMessageSchema = (typeof coreClientSchemas)[number];

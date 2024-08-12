@@ -97,6 +97,19 @@ export const createPostResponseSchema = createHostMessageSchema(
   ]),
 );
 
+export const contentReactionResponseSchema = createHostMessageSchema(
+  'user:content-reaction-response',
+  zod.union([
+    zod.object({
+      status: zod.literal('reacted'),
+      reaction: zod.string(),
+    }),
+    zod.object({
+      status: zod.literal('cleared'),
+    }),
+  ]),
+);
+
 export interface InitialInteractionRequest
   extends BaseClientMessage<typeof initialInteractionRequestSchema> {}
 export interface ResizeRequest
@@ -116,3 +129,5 @@ export interface CreatePostRequest
   extends BaseClientMessage<typeof createPostRequestSchema> {}
 export interface CreatePostResponse
   extends BaseHostMessage<typeof createPostResponseSchema> {}
+export interface ContentReactionResponse
+  extends BaseHostMessage<typeof contentReactionResponseSchema> {}

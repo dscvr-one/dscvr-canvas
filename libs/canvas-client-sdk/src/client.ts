@@ -134,6 +134,15 @@ export class CanvasClient {
     );
   }
 
+  onContentReaction(
+    callback: (reaction: CanvasInterface.User.ContentReactionResponse) => void,
+  ) {
+    this.subscribe(
+      CanvasInterface.User.contentReactionResponseSchema,
+      callback,
+    );
+  }
+
   connectWallet(
     chainId: string,
   ): Promise<CanvasInterface.User.ConnectWalletResponse> {

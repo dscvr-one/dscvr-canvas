@@ -69,8 +69,7 @@ const initJupiterWidget = () => {
         inputAmount: Number(payload.meta.quoteResponseMeta.quoteResponse.inAmount[0]),
         outputAmount: Number(payload.meta.quoteResponseMeta.quoteResponse.outAmount[0])
       });
-    },
-    onSuccess: (payload) => {}
+    }
   });
 };
 

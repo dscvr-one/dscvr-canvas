@@ -1,13 +1,10 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue';
-import * as bs58 from 'bs58';
-import { PublicKey } from '@solana/web3.js';
 import { CanvasInterface, CanvasClient } from '@dscvr-one/canvas-client-sdk';
-import type { WalletContextState } from '@jup-ag/wallet-adapter';
-import { createTXFromInstructions, jupiterRpcEndpoint } from './api/jupiter';
+import { registerCanvasWallet } from '@dscvr-one/canvas-wallet-adapter';
+import { jupiterRpcEndpoint } from './api/jupiter';
 import { validateHostMessage } from './api/dscvr';
 
-const chainId = 'solana:101';
 let canvasClient: CanvasClient | undefined;
 const resizeObserver = new ResizeObserver(() => canvasClient?.resize());
 const isReady = ref(false);
@@ -16,60 +13,14 @@ const user = ref<CanvasInterface.Lifecycle.User>();
 const content = ref<CanvasInterface.Lifecycle.Content>();
 
 const initJupiterWidget = () => {
-  if (!jupiterPlaceholderRef.value || !canvasClient) return;
-  let currentWalletPublicKey: PublicKey | undefined = undefined;
+  if (!jupiterPlaceholderRef.value) return;
   window.Jupiter.init({
     displayMode: 'integrated',
     integratedTargetId: 'jupiter-widget',
     endpoint: jupiterRpcEndpoint,
-    enableWalletPassthrough: true,
+    autoConnect: false,
     onFormUpdate: () => canvasClient?.resize(),
-    onScreenUpdate: () => canvasClient?.resize(),
-    onRequestConnectWallet: async () => {
-      const response = await canvasClient?.connectWallet(chainId);
-      if (!response?.untrusted.success) {
-        throw new Error('Failed to connect wallet');
-      }
-      currentWalletPublicKey = new PublicKey(response.untrusted.address);
-      const passthroughWalletContextState = {
-        publicKey: currentWalletPublicKey,
-        connected: true,
-        wallet: {
-          adapter: {
-            name: response.untrusted.walletName,
-            icon: response.untrusted.walletIcon,
-            publicKey: currentWalletPublicKey
-          }
-        }
-      } as WalletContextState;
-      window.Jupiter.syncProps({ passthroughWalletContextState });
-    },
-    onRequestIxCallback: async (payload) => {
-      if (!currentWalletPublicKey) {
-        console.error('no wallet currentWalletPublicKey is selected');
-        return;
-      }
-      const versionedTransaction = await createTXFromInstructions(currentWalletPublicKey, payload);
-      const unsignedTx = bs58.encode(versionedTransaction.serialize());
-
-      const signedTx = await canvasClient!.signAndSendTransaction({
-        chainId,
-        unsignedTx
-      });
-      if (!signedTx.untrusted.success) {
-        payload.onSubmitWithIx({
-          error: new Error('User cancelled transaction signing.')
-        });
-        return;
-      }
-      payload.onSubmitWithIx({
-        txid: signedTx.untrusted.signedTx,
-        inputAddress: payload.meta.sourceAddress,
-        outputAddress: payload.meta.destinationAddress,
-        inputAmount: Number(payload.meta.quoteResponseMeta.quoteResponse.inAmount[0]),
-        outputAmount: Number(payload.meta.quoteResponseMeta.quoteResponse.outAmount[0])
-      });
-    }
+    onScreenUpdate: () => canvasClient?.resize()
   });
 };
 
@@ -85,12 +36,13 @@ const start = async () => {
     content.value = response.untrusted.content;
   }
   initJupiterWidget();
-  canvasClient?.resize();
+  canvasClient.resize();
 };
 
 onMounted(() => {
   resizeObserver.observe(document.body);
   canvasClient = new CanvasClient();
+  registerCanvasWallet(canvasClient);
   start();
 });
 

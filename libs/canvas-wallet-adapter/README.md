@@ -46,7 +46,7 @@ import { useWallet } from 'solana-wallets-vue';
 const { wallets } = useWallet();
 
 onMounted(() => {
-  // you should be able to see `Dscvr Canvas Wallet` detected as installed
+  // you should be able to see `Dscvr Canvas` detected as installed
   console.log(wallets.value);
 });
 ```

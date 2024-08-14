@@ -3,13 +3,12 @@ import * as CanvasInterface from '@dscvr-one/canvas-interface';
 
 export class CanvasClient {
   private sourceOrigin: string;
-  private initResponseMessage:
-    | CanvasInterface.Lifecycle.InitResponseMessage
-    | undefined = undefined;
+  private initResponse: CanvasInterface.Lifecycle.InitResponse | undefined =
+    undefined;
   private initialInteractionRegistered = false;
   private eventBus = new EventEmitter<
-    CanvasInterface.HostMessageType,
-    CanvasInterface.HostMessage
+    string,
+    CanvasInterface.BaseHostMessage
   >();
 
   constructor() {
@@ -27,29 +26,78 @@ export class CanvasClient {
   }
 
   destroy() {
-    this.initResponseMessage = undefined;
+    this.initResponse = undefined;
     window.removeEventListener('message', this.handleReceiveMessage);
     this.removeInitialInteractionListeners();
   }
 
   get isReady() {
-    return !!this.initResponseMessage;
+    return !!this.initResponse;
   }
 
   async ready(onClose?: () => void) {
     if (onClose) {
       this.eventBus.on('lifecycle:close', onClose);
     }
-    if (this.initResponseMessage) {
-      return this.initResponseMessage;
+    if (this.initResponse) {
+      return this.initResponse;
     } else {
       this.sendHandshake();
-      return await new Promise<CanvasInterface.Lifecycle.InitResponseMessage>(
-        (resolve) => {
-          this.eventBus.once('lifecycle:init-response', resolve);
-        },
+      return await this.subscribeOnce(
+        CanvasInterface.Lifecycle.initResponseSchema,
       );
     }
+  }
+
+  subscribe<S extends CanvasInterface.BaseHostMessageSchema>(
+    schema: S,
+    callback: (message: CanvasInterface.BaseHostMessage<S>) => void,
+  ) {
+    const responseType = schema.shape.type.value;
+    this.eventBus.on(
+      responseType,
+      (message: CanvasInterface.BaseHostMessage<S>) => {
+        const parsedMessage = schema.safeParse(message);
+        if (!parsedMessage.success) {
+          return;
+        }
+        callback(message);
+      },
+    );
+  }
+
+  subscribeOnce<S extends CanvasInterface.BaseHostMessageSchema>(
+    schema: S,
+  ): Promise<CanvasInterface.BaseHostMessage<S>> {
+    const responseType = schema.shape.type.value;
+    return new Promise<CanvasInterface.BaseHostMessage<S>>((resolve) => {
+      this.eventBus.once(
+        responseType,
+        (message: CanvasInterface.BaseHostMessage<S>) => {
+          const parsedMessage = schema.safeParse(message);
+          if (!parsedMessage.success) {
+            return;
+          }
+          resolve(message);
+        },
+      );
+    });
+  }
+
+  sendMessage(message: CanvasInterface.BaseClientMessage) {
+    window.parent.postMessage(message, this.sourceOrigin);
+  }
+
+  sendMessageAndWaitResponse<
+    T extends CanvasInterface.BaseClientMessage,
+    S extends CanvasInterface.BaseHostMessageSchema,
+  >(
+    message: T,
+    responseSchema: S,
+  ): Promise<CanvasInterface.BaseHostMessage<S>> {
+    const responsePromise = this.subscribeOnce<S>(responseSchema);
+    this.sendMessage(message);
+    return responsePromise;
   }
 
   openLink(url: string) {
@@ -61,7 +109,7 @@ export class CanvasClient {
     });
   }
 
-  resize(newPayload?: CanvasInterface.User.ResizeRequestMessage['payload']) {
+  resize(newPayload?: CanvasInterface.User.ResizeRequest['payload']) {
     const payload = newPayload ?? this.getWindowSize();
     if (payload.width <= 0 || payload.height <= 0) {
       return;
@@ -74,20 +122,16 @@ export class CanvasClient {
 
   connectWallet(
     chainId: string,
-  ): Promise<CanvasInterface.User.ConnectWalletResponseMessage> {
-    const responsePromise =
-      new Promise<CanvasInterface.User.ConnectWalletResponseMessage>(
-        (resolve) => {
-          this.eventBus.once('user:connect-wallet-response', resolve);
+  ): Promise<CanvasInterface.User.ConnectWalletResponse> {
+    return this.sendMessageAndWaitResponse(
+      {
+        type: 'user:connect-wallet-request',
+        payload: {
+          chainId,
         },
-      );
-    this.sendMessage({
-      type: 'user:connect-wallet-request',
-      payload: {
-        chainId,
       },
-    });
-    return responsePromise;
+      CanvasInterface.User.connectWalletResponseSchema,
+    );
   }
 
   signAndSendTransaction(
@@ -95,27 +139,21 @@ export class CanvasClient {
       chainId: string;
     },
   ) {
-    const responsePromise =
-      new Promise<CanvasInterface.User.SignAndSendTransactionResponseMessage>(
-        (resolve) => {
-          this.eventBus.once('user:sign-send-transaction-response', resolve);
-        },
-      );
-    this.sendMessage({
-      type: 'user:sign-send-transaction-request',
-      payload,
-    });
-    return responsePromise;
+    return this.sendMessageAndWaitResponse(
+      {
+        type: 'user:sign-send-transaction-request',
+        payload,
+      },
+      CanvasInterface.User.signAndSendTransactionResponseSchema,
+    );
   }
 
   async connectWalletAndSendTransaction(
     chainId: string,
     createTx: (
-      connectResponse: CanvasInterface.User.ConnectWalletResponseMessage,
+      connectResponse: CanvasInterface.User.ConnectWalletResponse,
     ) => Promise<CanvasInterface.User.UnsignedTransaction | undefined>,
-  ): Promise<
-    CanvasInterface.User.SignAndSendTransactionResponseMessage | undefined
-  > {
+  ): Promise<CanvasInterface.User.SignAndSendTransactionResponse | undefined> {
     const walletResponse = await this.connectWallet(chainId);
     if (!walletResponse.untrusted.success) {
       return {
@@ -146,29 +184,24 @@ export class CanvasClient {
     });
   }
 
-  private sendMessage(message: CanvasInterface.ClientMessage) {
-    window.parent.postMessage(message, this.sourceOrigin);
-  }
-
   private handleReceiveMessage = (
-    event: MessageEvent<CanvasInterface.HostMessage>,
+    event: MessageEvent<CanvasInterface.BaseHostMessage>,
   ) => {
     const messageData = event.data;
 
-    const parsedMessage =
-      CanvasInterface.HostMessageSchema.safeParse(messageData);
-    if (!parsedMessage.success) {
+    const message = CanvasInterface.parseBaseHostMessage(messageData);
+    if (!message) {
       return;
     }
 
-    const message = parsedMessage.data;
-
-    if (message.type === 'lifecycle:init-response') {
-      if (this.initResponseMessage) {
+    const parsedInitMessage =
+      CanvasInterface.Lifecycle.initResponseSchema.safeParse(messageData);
+    if (parsedInitMessage.success) {
+      if (this.initResponse) {
         throw new CanvasInterface.ClientAlreadyInitializedError();
       }
-      this.initResponseMessage = message;
-    } else if (!this.initResponseMessage) {
+      this.initResponse = parsedInitMessage.data;
+    } else if (!this.initResponse) {
       throw new CanvasInterface.ClientNotInitializedError();
     }
 

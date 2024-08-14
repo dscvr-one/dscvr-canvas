@@ -108,6 +108,9 @@ importers:
       '@dscvr-one/canvas-client-sdk':
         specifier: ^1.0.0
         version: link:../../libs/canvas-client-sdk
+      '@dscvr-one/canvas-wallet-adapter':
+        specifier: ^1.0.1
+        version: link:../../libs/canvas-wallet-adapter
       '@jup-ag/common':
         specifier: 6.0.0-beta.9
         version: 6.0.0-beta.9(@solana/web3.js@1.95.1)(bn.js@5.2.1)(fastestsmallesttextencoderdecoder@1.0.22)
@@ -318,6 +321,140 @@ importers:
 
   libs/canvas-interface:
     dependencies:
+      zod:
+        specifier: ^3.23.8
+        version: 3.23.8
+    devDependencies:
+      '@commitlint/cli':
+        specifier: ^19.1.0
+        version: 19.3.0(@types/node@20.14.10)(typescript@5.4.5)
+      '@commitlint/config-conventional':
+        specifier: ^19.1.0
+        version: 19.2.2
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^7.3.1
+        version: 7.16.1(@typescript-eslint/parser@7.16.1)(eslint@8.57.0)(typescript@5.4.5)
+      '@typescript-eslint/parser':
+        specifier: ^7.3.1
+        version: 7.16.1(eslint@8.57.0)(typescript@5.4.5)
+      eslint:
+        specifier: ^8.57.0
+        version: 8.57.0
+      eslint-config-prettier:
+        specifier: ^9.1.0
+        version: 9.1.0(eslint@8.57.0)
+      eslint-plugin-prettier:
+        specifier: ^5.1.3
+        version: 5.1.3(eslint-config-prettier@9.1.0)(eslint@8.57.0)(prettier@3.3.2)
+      lint-staged:
+        specifier: ^15.2.2
+        version: 15.2.7
+      shipjs:
+        specifier: 0.26.3
+        version: 0.26.3
+      ts-node:
+        specifier: ^10.9.2
+        version: 10.9.2(@types/node@20.14.10)(typescript@5.4.5)
+      tsup:
+        specifier: ^8.0.2
+        version: 8.1.0(ts-node@10.9.2)(typescript@5.4.5)
+      typedoc:
+        specifier: ^0.26.3
+        version: 0.26.4(typescript@5.4.5)
+      typedoc-plugin-zod:
+        specifier: ^1.2.0
+        version: 1.2.0(typedoc@0.26.4)
+      typescript:
+        specifier: ^5.3.3
+        version: 5.4.5
+
+  libs/canvas-wallet-adapter:
+    dependencies:
+      '@dscvr-one/canvas-client-sdk':
+        specifier: ^1.0.0
+        version: link:../canvas-client-sdk
+      '@dscvr-one/canvas-wallet-interface':
+        specifier: ^1.0.0
+        version: link:../canvas-wallet-interface
+      '@solana/wallet-adapter-base':
+        specifier: ^0.9.23
+        version: 0.9.23(@solana/web3.js@1.95.1)
+      '@solana/wallet-standard':
+        specifier: ^1.1.2
+        version: 1.1.2(@solana/wallet-adapter-base@0.9.23)(@solana/web3.js@1.95.1)(bs58@5.0.0)(react@18.3.1)
+      '@solana/wallet-standard-wallet-adapter-base':
+        specifier: ^1.1.2
+        version: 1.1.2(@solana/web3.js@1.95.1)(bs58@5.0.0)
+      '@solana/web3.js':
+        specifier: ^1.91.4
+        version: 1.95.1
+      '@wallet-standard/base':
+        specifier: 0.0.0-20240703212708
+        version: 0.0.0-20240703212708
+      '@wallet-standard/core':
+        specifier: 0.0.0-20240703212708
+        version: 0.0.0-20240703212708
+      '@wallet-standard/wallet':
+        specifier: 0.0.0-20240703212708
+        version: 0.0.0-20240703212708
+      bs58:
+        specifier: ^5.0.0
+        version: 5.0.0
+    devDependencies:
+      '@commitlint/cli':
+        specifier: ^19.1.0
+        version: 19.3.0(@types/node@20.14.10)(typescript@5.4.5)
+      '@commitlint/config-conventional':
+        specifier: ^19.1.0
+        version: 19.2.2
+      '@types/node':
+        specifier: ^20
+        version: 20.14.10
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^7.3.1
+        version: 7.16.1(@typescript-eslint/parser@7.16.1)(eslint@8.57.0)(typescript@5.4.5)
+      '@typescript-eslint/parser':
+        specifier: ^7.3.1
+        version: 7.16.1(eslint@8.57.0)(typescript@5.4.5)
+      eslint:
+        specifier: ^8.57.0
+        version: 8.57.0
+      eslint-config-prettier:
+        specifier: ^9.1.0
+        version: 9.1.0(eslint@8.57.0)
+      eslint-plugin-prettier:
+        specifier: ^5.1.3
+        version: 5.1.3(eslint-config-prettier@9.1.0)(eslint@8.57.0)(prettier@3.3.2)
+      lint-staged:
+        specifier: ^15.2.2
+        version: 15.2.7
+      shipjs:
+        specifier: 0.26.3
+        version: 0.26.3
+      ts-node:
+        specifier: ^10.9.2
+        version: 10.9.2(@types/node@20.14.10)(typescript@5.4.5)
+      tsup:
+        specifier: ^8.0.2
+        version: 8.1.0(ts-node@10.9.2)(typescript@5.4.5)
+      typedoc:
+        specifier: ^0.26.3
+        version: 0.26.4(typescript@5.4.5)
+      typedoc-plugin-zod:
+        specifier: ^1.2.0
+        version: 1.2.0(typedoc@0.26.4)
+      typescript:
+        specifier: ^5.3.3
+        version: 5.4.5
+
+  libs/canvas-wallet-interface:
+    dependencies:
+      '@dscvr-one/canvas-interface':
+        specifier: ^1.0.0
+        version: link:../canvas-interface
+      '@solana/wallet-adapter-base':
+        specifier: ^0.9.23
+        version: 0.9.23(@solana/web3.js@1.95.1)
       zod:
         specifier: ^3.23.8
         version: 3.23.8
@@ -4465,6 +4602,13 @@ packages:
     resolution: {integrity: sha512-VcZK7MvpjuTPx2w6blwnwZAu5/LgBUtejFOi3pPGQFXQN5Ela03FUtd2Qtg4yWGGissVL0dr6Ro1LfOFh+PCuQ==}
     dev: true
 
+  /@wallet-standard/app@0.0.0-20240703212708:
+    resolution: {integrity: sha512-9dbm+DtuhD48u0pMXs0vairkCvN1PGzhb2SWCeYNT3bmaYGkv7XfkpNLFf8O8xngm0WdM0pbP9WRfxaJfEIN6w==}
+    engines: {node: '>=16'}
+    dependencies:
+      '@wallet-standard/base': 0.0.0-20240703212708
+    dev: false
+
   /@wallet-standard/app@1.0.1:
     resolution: {integrity: sha512-LnLYq2Vy2guTZ8GQKKSXQK3+FRGPil75XEdkZqE6fiLixJhZJoJa5hT7lXxwe0ykVTt9LEThdTbOpT7KadS26Q==}
     engines: {node: '>=16'}
@@ -4472,9 +4616,25 @@ packages:
       '@wallet-standard/base': 1.0.1
     dev: false
 
+  /@wallet-standard/base@0.0.0-20240703212708:
+    resolution: {integrity: sha512-D9z2nlH3wyR6NZBVjX2csAMAvSZvhXujWQkyx/5fhZ5QsHnbcrt0g21u231kIC7zuAzmH3tjQ0/xyR/2bfvjgA==}
+    engines: {node: '>=16'}
+    dev: false
+
   /@wallet-standard/base@1.0.1:
     resolution: {integrity: sha512-1To3ekMfzhYxe0Yhkpri+Fedq0SYcfrOfJi3vbLjMwF2qiKPjTGLwZkf2C9ftdQmxES+hmxhBzTwF4KgcOwf8w==}
     engines: {node: '>=16'}
+    dev: false
+
+  /@wallet-standard/core@0.0.0-20240703212708:
+    resolution: {integrity: sha512-KvoLY7XHk9r++bjggJGhYlORUxe8NxJZ7uPyaypvtZf9nJSviZtawWtAVXq+B+YP7EGKF6gW0HuS3mjYfXO2gg==}
+    engines: {node: '>=16'}
+    dependencies:
+      '@wallet-standard/app': 0.0.0-20240703212708
+      '@wallet-standard/base': 0.0.0-20240703212708
+      '@wallet-standard/errors': 0.0.0-20240703212708
+      '@wallet-standard/features': 0.0.0-20240703212708
+      '@wallet-standard/wallet': 0.0.0-20240703212708
     dev: false
 
   /@wallet-standard/core@1.0.3:
@@ -4487,11 +4647,34 @@ packages:
       '@wallet-standard/wallet': 1.0.1
     dev: false
 
+  /@wallet-standard/errors@0.0.0-20240703212708:
+    resolution: {integrity: sha512-Bord90VSpPAD30ukC3h8MEZYzv0BZoRnG+DNWcsm8MOuivsZzSmWFcnoxX4ErZgKknxaCRT8qLc3+3+k4QVL3w==}
+    engines: {node: '>=16'}
+    hasBin: true
+    dependencies:
+      chalk: 5.3.0
+      commander: 12.1.0
+    dev: false
+
+  /@wallet-standard/features@0.0.0-20240703212708:
+    resolution: {integrity: sha512-b5U7UKzlI2j+VnNZCWiEXewA4jHGcbD7xVHr91/NYSnGs5sos8Y7YXpnf+07ib/LwInd/X00g3/qzz9wRtv+Ew==}
+    engines: {node: '>=16'}
+    dependencies:
+      '@wallet-standard/base': 0.0.0-20240703212708
+    dev: false
+
   /@wallet-standard/features@1.0.3:
     resolution: {integrity: sha512-m8475I6W5LTatTZuUz5JJNK42wFRgkJTB0I9tkruMwfqBF2UN2eomkYNVf9RbrsROelCRzSFmugqjKZBFaubsA==}
     engines: {node: '>=16'}
     dependencies:
       '@wallet-standard/base': 1.0.1
+    dev: false
+
+  /@wallet-standard/wallet@0.0.0-20240703212708:
+    resolution: {integrity: sha512-iTPr84ki4BZvEx4YPl/svDZ90rwj6teyAV9ip9p/q5IVLYCofzZOdUKnLu3R81O0rnnIeeDs8i6q4YkzHgtfYA==}
+    engines: {node: '>=16'}
+    dependencies:
+      '@wallet-standard/base': 0.0.0-20240703212708
     dev: false
 
   /@wallet-standard/wallet@1.0.1:

@@ -32,7 +32,7 @@
     "rpc"
   ],
   "dependencies": {
-    "@dscvr-one/canvas-client-sdk": "^1.0.0",
+    "@dscvr-one/canvas-client-sdk": "^1.1.0",
     "@dscvr-one/canvas-wallet-interface": "^1.0.0",
     "@solana/wallet-adapter-base": "^0.9.23",
     "@solana/wallet-standard": "^1.1.2",

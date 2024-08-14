@@ -36,7 +36,7 @@ importers:
   examples/getting-started:
     dependencies:
       '@dscvr-one/canvas-client-sdk':
-        specifier: ^1.0.0
+        specifier: ^1.1.0
         version: link:../../libs/canvas-client-sdk
       vue:
         specifier: ^3.4.29
@@ -106,7 +106,7 @@ importers:
   examples/jupiter-swap:
     dependencies:
       '@dscvr-one/canvas-client-sdk':
-        specifier: ^1.0.0
+        specifier: ^1.1.0
         version: link:../../libs/canvas-client-sdk
       '@dscvr-one/canvas-wallet-adapter':
         specifier: ^1.0.1
@@ -185,7 +185,7 @@ importers:
   examples/transaction:
     dependencies:
       '@dscvr-one/canvas-client-sdk':
-        specifier: ^1.0.0
+        specifier: ^1.1.0
         version: link:../../libs/canvas-client-sdk
       '@solana/web3.js':
         specifier: ^1.91.4
@@ -267,7 +267,7 @@ importers:
   libs/canvas-client-sdk:
     dependencies:
       '@dscvr-one/canvas-interface':
-        specifier: ^1.0.0
+        specifier: ^1.1.0
         version: link:../canvas-interface
       eventemitter3:
         specifier: ^5.0.1
@@ -371,7 +371,7 @@ importers:
   libs/canvas-wallet-adapter:
     dependencies:
       '@dscvr-one/canvas-client-sdk':
-        specifier: ^1.0.0
+        specifier: ^1.1.0
         version: link:../canvas-client-sdk
       '@dscvr-one/canvas-wallet-interface':
         specifier: ^1.0.0
@@ -450,7 +450,7 @@ importers:
   libs/canvas-wallet-interface:
     dependencies:
       '@dscvr-one/canvas-interface':
-        specifier: ^1.0.0
+        specifier: ^1.1.0
         version: link:../canvas-interface
       '@solana/wallet-adapter-base':
         specifier: ^0.9.23

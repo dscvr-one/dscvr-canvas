@@ -120,6 +120,20 @@ export class CanvasClient {
     });
   }
 
+  createPost(
+    htmlContent: string,
+  ): Promise<CanvasInterface.User.CreatePostResponse> {
+    return this.sendMessageAndWaitResponse(
+      {
+        type: 'user:create-post-request',
+        payload: {
+          htmlContent,
+        },
+      },
+      CanvasInterface.User.createPostResponseSchema,
+    );
+  }
+
   connectWallet(
     chainId: string,
   ): Promise<CanvasInterface.User.ConnectWalletResponse> {

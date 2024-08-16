@@ -29,6 +29,12 @@ const openUserProfile = () => {
   canvasClient.openLink(url);
 };
 
+const createNewPost = () => {
+  if (!canvasClient || !user.value) return;
+  const html = `<h1>New canvas post!</h1><p>New post using your canvas app by <b>${user.value.username}</b></p>`;
+  canvasClient.createPost(html);
+};
+
 const setBodyHeight = (height: number) => {
   window.document.body.style.height = height ? `${height}px` : '';
 };
@@ -53,6 +59,12 @@ onUnmounted(() => {
     <template v-else>
       <user-info v-if="user" :user="user" @open="openUserProfile" />
       <content-info v-if="content" :content="content" />
+      <button
+        class="text-white font-bold py-2 px-4 rounded bg-blue-500 hover:bg-blue-400 hover:border-blue-500"
+        @click="createNewPost"
+      >
+        Create new post
+      </button>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <button
           v-for="height in [1000, 1500, 0]"

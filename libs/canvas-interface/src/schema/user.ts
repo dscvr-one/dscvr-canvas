@@ -79,6 +79,24 @@ export const openLnkRequestSchema = createClientMessageSchema(
   }),
 );
 
+export const createPostRequestSchema = createClientMessageSchema(
+  'user:create-post-request',
+  zod.object({
+    htmlContent: zod.string(),
+  }),
+);
+
+export const createPostResponseSchema = createHostMessageSchema(
+  'user:create-post-response',
+  zod.union([
+    zod.object({
+      success: zod.literal(true),
+      contentId: zod.bigint(),
+    }),
+    createFailedResponsePayload(['user-cancelled', 'error']),
+  ]),
+);
+
 export interface InitialInteractionRequest
   extends BaseClientMessage<typeof initialInteractionRequestSchema> {}
 export interface ResizeRequest
@@ -94,3 +112,7 @@ export interface SignAndSendTransactionResponse
   extends BaseHostMessage<typeof signAndSendTransactionResponseSchema> {}
 export interface OpenLnkRequest
   extends BaseClientMessage<typeof openLnkRequestSchema> {}
+export interface CreatePostRequest
+  extends BaseClientMessage<typeof createPostRequestSchema> {}
+export interface CreatePostResponse
+  extends BaseHostMessage<typeof createPostResponseSchema> {}

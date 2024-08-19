@@ -6,11 +6,13 @@ import ContentInfo from './components/ContentInfo.vue';
 import ContentReaction from './components/ContentReaction.vue';
 import { validateHostMessage } from './api/dscvr';
 
+const copyToClipboardOriginalMessage = 'Copy username to clipboard';
 let canvasClient: CanvasClient | undefined;
 const isReady = ref(false);
 const user = ref<CanvasInterface.Lifecycle.User>();
 const content = ref<CanvasInterface.Lifecycle.Content>();
 const contentReaction = ref<string>();
+const copyToClipboardLabel = ref(copyToClipboardOriginalMessage);
 const resizeObserver = new ResizeObserver(() => canvasClient?.resize());
 
 const start = async () => {
@@ -49,6 +51,15 @@ const setBodyHeight = (height: number) => {
   window.document.body.style.height = height ? `${height}px` : '';
 };
 
+const copyUsername = async () => {
+  if (!user.value) return;
+  await canvasClient.copyToClipboard(user.value.username);
+  copyToClipboardLabel.value = 'Copied!';
+  setTimeout(() => {
+    copyToClipboardLabel.value = copyToClipboardOriginalMessage;
+  }, 2000);
+};
+
 onMounted(() => {
   resizeObserver.observe(document.body);
   canvasClient = new CanvasClient();
@@ -75,6 +86,14 @@ onUnmounted(() => {
         @click="createNewPost"
       >
         Create new post
+      </button>
+      <button
+        class="text-white font-bold py-2 px-4 rounded bg-purple-500 hover:bg-purple-400 hover:border-purple-500"
+        @click="copyUsername"
+      >
+        <transition>
+          <span :key="copyToClipboardLabel">{{ copyToClipboardLabel }}</span>
+        </transition>
       </button>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <button

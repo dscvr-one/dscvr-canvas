@@ -16,6 +16,8 @@ import {
   openLnkRequestSchema,
   createPostRequestSchema,
   createPostResponseSchema,
+  copyToClipboardRequestSchema,
+  copyToClipboardResponseSchema,
   contentReactionResponseSchema,
 } from './user';
 import type { BaseClientMessage, BaseHostMessage } from './base';
@@ -28,6 +30,7 @@ const coreClientSchemas = [
   signAndSendTransactionRequestSchema,
   openLnkRequestSchema,
   createPostRequestSchema,
+  copyToClipboardRequestSchema,
 ] as const;
 
 const coreHostSchemas = [
@@ -36,6 +39,7 @@ const coreHostSchemas = [
   connectWalletResponseSchema,
   signAndSendTransactionResponseSchema,
   createPostResponseSchema,
+  copyToClipboardResponseSchema,
   contentReactionResponseSchema,
 ] as const;
 

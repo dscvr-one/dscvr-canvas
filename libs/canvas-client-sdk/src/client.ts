@@ -134,6 +134,20 @@ export class CanvasClient {
     );
   }
 
+  copyToClipboard(
+    content: string,
+  ): Promise<CanvasInterface.User.CopyToClipboardResponse> {
+    return this.sendMessageAndWaitResponse(
+      {
+        type: 'user:copy-to-clipboard-request',
+        payload: {
+          content,
+        },
+      },
+      CanvasInterface.User.copyToClipboardResponseSchema,
+    );
+  }
+
   onContentReaction(
     callback: (reaction: CanvasInterface.User.ContentReactionResponse) => void,
   ) {

@@ -97,6 +97,23 @@ export const createPostResponseSchema = createHostMessageSchema(
   ]),
 );
 
+export const copyToClipboardRequestSchema = createClientMessageSchema(
+  'user:copy-to-clipboard-request',
+  zod.object({
+    content: zod.string(),
+  }),
+);
+
+export const copyToClipboardResponseSchema = createHostMessageSchema(
+  'user:copy-to-clipboard-response',
+  zod.union([
+    zod.object({
+      success: zod.literal(true),
+    }),
+    createFailedResponsePayload(['user-cancelled', 'error']),
+  ]),
+);
+
 export const contentReactionResponseSchema = createHostMessageSchema(
   'user:content-reaction-response',
   zod.union([
@@ -129,5 +146,9 @@ export interface CreatePostRequest
   extends BaseClientMessage<typeof createPostRequestSchema> {}
 export interface CreatePostResponse
   extends BaseHostMessage<typeof createPostResponseSchema> {}
+export interface CopyToClipboardRequest
+  extends BaseClientMessage<typeof copyToClipboardRequestSchema> {}
+export interface CopyToClipboardResponse
+  extends BaseHostMessage<typeof copyToClipboardResponseSchema> {}
 export interface ContentReactionResponse
   extends BaseHostMessage<typeof contentReactionResponseSchema> {}

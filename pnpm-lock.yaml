@@ -371,10 +371,10 @@ importers:
   libs/canvas-wallet-adapter:
     dependencies:
       '@dscvr-one/canvas-client-sdk':
-        specifier: ^1.1.0
+        specifier: ~1.1.0
         version: link:../canvas-client-sdk
       '@dscvr-one/canvas-wallet-interface':
-        specifier: ^1.0.0
+        specifier: ~1.0.0
         version: link:../canvas-wallet-interface
       '@solana/wallet-adapter-base':
         specifier: ^0.9.23

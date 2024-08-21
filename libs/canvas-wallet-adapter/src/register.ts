@@ -8,9 +8,9 @@ export const registerCanvasWallet = (canvasClient: CanvasClient) => {
   const wallets = get();
   const exists = wallets.find((wallet) => wallet.name === CANVAS_WALLET_NAME);
   if (exists) {
-    // TODO: Since the user could potentially instantiate the canvas client more than once
+    // Since the user could potentially instantiate the canvas client more than once
     // we need to update the canvas client in the wallet
-    // A common scneario is React testing environment that calls hooks twice.
+    // A common scenario is React testing environment that calls hooks twice.
     (exists as CanvasWallet).setCanvasClient(canvasClient);
     return exists;
   }

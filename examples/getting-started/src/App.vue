@@ -11,7 +11,7 @@ let canvasClient: CanvasClient | undefined;
 const isReady = ref(false);
 const user = ref<CanvasInterface.Lifecycle.User>();
 const content = ref<CanvasInterface.Lifecycle.Content>();
-const contentReaction = ref<string>();
+const currentReaction = ref<string>();
 const copyToClipboardLabel = ref(copyToClipboardOriginalMessage);
 const resizeObserver = new ResizeObserver(() => canvasClient?.resize());
 
@@ -28,9 +28,9 @@ const start = async () => {
   canvasClient.onContentReaction((reaction) => {
     if (!validateHostMessage(reaction)) return;
     if (reaction.untrusted.status === 'cleared') {
-      contentReaction.value = '';
+      currentReaction.value = '';
     } else {
-      contentReaction.value = reaction.untrusted.reaction;
+      currentReaction.value = reaction.untrusted.reaction;
     }
   });
 };
@@ -52,7 +52,7 @@ const setBodyHeight = (height: number) => {
 };
 
 const copyUsername = async () => {
-  if (!user.value) return;
+  if (!canvasClient || !user.value) return;
   await canvasClient.copyToClipboard(user.value.username);
   copyToClipboardLabel.value = 'Copied!';
   setTimeout(() => {
@@ -80,7 +80,7 @@ onUnmounted(() => {
     <template v-else>
       <user-info v-if="user" :user="user" @open="openUserProfile" />
       <content-info v-if="content" :content="content" />
-      <content-reaction :reaction="contentReaction" />
+      <content-reaction :reaction="currentReaction" />
       <button
         class="text-white font-bold py-2 px-4 rounded bg-blue-500 hover:bg-blue-400 hover:border-blue-500"
         @click="createNewPost"

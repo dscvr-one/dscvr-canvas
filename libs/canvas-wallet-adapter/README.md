@@ -33,8 +33,10 @@ import { registerCanvasWallet } from '@dscvr-one/canvas-wallet-adapter';
 2. Apply function tp the `CanvasClient` instance:
 
 ```typescript
-const canvasClient = new CanvasClient();
-registerCanvasWallet(canvasClient);
+const canvasClient = createCanvasClient();
+if (canvasClient) {
+  registerCanvasWallet(canvasClient);
+}
 ```
 
 3. Use a package of your chose to access the installed wallets:

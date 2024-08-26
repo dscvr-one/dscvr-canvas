@@ -136,8 +136,8 @@ const submit = () => {
       Open in Solana.fm
     </a>
     <button
-      @click="clear"
       class="bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-4 border-b-4 border-gray-700 hover:border-gray-500 rounded"
+      @click="clear"
     >
       Close
     </button>
@@ -150,7 +150,7 @@ const submit = () => {
     <h2 class="text-2xl">Send Transaction</h2>
     <div v-if="sourceAddress" class="flex items-center gap-4 w-full">
       <label class="min-w-28">Source Address</label>
-      <span class="flex-1 text-gray-400">{{ sourceAddress }}</span>
+      <span class="flex-1 text-gray-400 truncate text-ellipsis">{{ sourceAddress }}</span>
     </div>
 
     <div class="flex flex-col md:flex-row items-center gap-4 w-full">

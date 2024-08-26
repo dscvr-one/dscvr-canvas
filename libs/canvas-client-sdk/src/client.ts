@@ -12,6 +12,9 @@ export class CanvasClient {
     CanvasInterface.BaseHostMessage
   >();
 
+  /**
+   * @deprecated since version 2.0.0. Use `createCanvasClient` instead
+   */
   constructor() {
     if (typeof window === 'undefined') {
       throw new CanvasInterface.WindowNotDefinedError();
@@ -242,7 +245,9 @@ export class CanvasClient {
       CanvasInterface.Lifecycle.initResponseSchema.safeParse(messageData);
     if (parsedInitMessage.success) {
       if (this.initResponse) {
-        throw new CanvasInterface.ClientAlreadyInitializedError();
+        throw new CanvasInterface.ClientAlreadyInitializedError(
+          'Use `destroy` method to reset the client',
+        );
       }
       this.initResponse = parsedInitMessage.data;
     } else if (!this.initResponse) {

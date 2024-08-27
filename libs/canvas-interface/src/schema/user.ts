@@ -79,6 +79,54 @@ export const openLnkRequestSchema = createClientMessageSchema(
   }),
 );
 
+export const createPostRequestSchema = createClientMessageSchema(
+  'user:create-post-request',
+  zod.object({
+    htmlContent: zod.string(),
+  }),
+);
+
+export const createPostResponseSchema = createHostMessageSchema(
+  'user:create-post-response',
+  zod.union([
+    zod.object({
+      success: zod.literal(true),
+      contentId: zod.bigint(),
+    }),
+    createFailedResponsePayload(['user-cancelled', 'error']),
+  ]),
+);
+
+export const copyToClipboardRequestSchema = createClientMessageSchema(
+  'user:copy-to-clipboard-request',
+  zod.object({
+    content: zod.string(),
+  }),
+);
+
+export const copyToClipboardResponseSchema = createHostMessageSchema(
+  'user:copy-to-clipboard-response',
+  zod.union([
+    zod.object({
+      success: zod.literal(true),
+    }),
+    createFailedResponsePayload(['user-cancelled', 'error']),
+  ]),
+);
+
+export const contentReactionResponseSchema = createHostMessageSchema(
+  'user:content-reaction-response',
+  zod.union([
+    zod.object({
+      status: zod.literal('reacted'),
+      reaction: zod.string(),
+    }),
+    zod.object({
+      status: zod.literal('cleared'),
+    }),
+  ]),
+);
+
 export interface InitialInteractionRequest
   extends BaseClientMessage<typeof initialInteractionRequestSchema> {}
 export interface ResizeRequest
@@ -94,3 +142,13 @@ export interface SignAndSendTransactionResponse
   extends BaseHostMessage<typeof signAndSendTransactionResponseSchema> {}
 export interface OpenLnkRequest
   extends BaseClientMessage<typeof openLnkRequestSchema> {}
+export interface CreatePostRequest
+  extends BaseClientMessage<typeof createPostRequestSchema> {}
+export interface CreatePostResponse
+  extends BaseHostMessage<typeof createPostResponseSchema> {}
+export interface CopyToClipboardRequest
+  extends BaseClientMessage<typeof copyToClipboardRequestSchema> {}
+export interface CopyToClipboardResponse
+  extends BaseHostMessage<typeof copyToClipboardResponseSchema> {}
+export interface ContentReactionResponse
+  extends BaseHostMessage<typeof contentReactionResponseSchema> {}

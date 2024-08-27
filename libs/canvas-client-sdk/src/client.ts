@@ -3,6 +3,7 @@ import * as CanvasInterface from '@dscvr-one/canvas-interface';
 
 export class CanvasClient {
   private sourceOrigin: string;
+  private initialized = false;
   private initResponse: CanvasInterface.Lifecycle.InitResponse | undefined =
     undefined;
   private initialInteractionRegistered = false;
@@ -15,9 +16,6 @@ export class CanvasClient {
     if (typeof window === 'undefined') {
       throw new CanvasInterface.WindowNotDefinedError();
     }
-    window.addEventListener('message', this.handleReceiveMessage);
-    window.addEventListener('click', this.handleInitialInteraction);
-    window.addEventListener('focus', this.handleInitialInteraction);
 
     if (!document.referrer) {
       throw new CanvasInterface.ReferrerNotDefinedError();
@@ -26,8 +24,11 @@ export class CanvasClient {
   }
 
   destroy() {
+    this.initialized = false;
     this.initResponse = undefined;
     window.removeEventListener('message', this.handleReceiveMessage);
+    window.removeEventListener('click', this.handleInitialInteraction);
+    window.removeEventListener('focus', this.handleInitialInteraction);
     this.removeInitialInteractionListeners();
   }
 
@@ -42,7 +43,13 @@ export class CanvasClient {
     if (this.initResponse) {
       return this.initResponse;
     } else {
-      this.sendHandshake();
+      if (!this.initialized) {
+        window.addEventListener('message', this.handleReceiveMessage);
+        window.addEventListener('click', this.handleInitialInteraction);
+        window.addEventListener('focus', this.handleInitialInteraction);
+        this.sendHandshake();
+        this.initialized = true;
+      }
       return await this.subscribeOnce(
         CanvasInterface.Lifecycle.initResponseSchema,
       );
@@ -118,6 +125,43 @@ export class CanvasClient {
       type: 'user:resize-request',
       payload,
     });
+  }
+
+  createPost(
+    htmlContent: string,
+  ): Promise<CanvasInterface.User.CreatePostResponse> {
+    return this.sendMessageAndWaitResponse(
+      {
+        type: 'user:create-post-request',
+        payload: {
+          htmlContent,
+        },
+      },
+      CanvasInterface.User.createPostResponseSchema,
+    );
+  }
+
+  copyToClipboard(
+    content: string,
+  ): Promise<CanvasInterface.User.CopyToClipboardResponse> {
+    return this.sendMessageAndWaitResponse(
+      {
+        type: 'user:copy-to-clipboard-request',
+        payload: {
+          content,
+        },
+      },
+      CanvasInterface.User.copyToClipboardResponseSchema,
+    );
+  }
+
+  onContentReaction(
+    callback: (reaction: CanvasInterface.User.ContentReactionResponse) => void,
+  ) {
+    this.subscribe(
+      CanvasInterface.User.contentReactionResponseSchema,
+      callback,
+    );
   }
 
   connectWallet(

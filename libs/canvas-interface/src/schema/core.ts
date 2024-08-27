@@ -14,6 +14,11 @@ import {
   signAndSendTransactionRequestSchema,
   signAndSendTransactionResponseSchema,
   openLnkRequestSchema,
+  createPostRequestSchema,
+  createPostResponseSchema,
+  copyToClipboardRequestSchema,
+  copyToClipboardResponseSchema,
+  contentReactionResponseSchema,
 } from './user';
 import type { BaseClientMessage, BaseHostMessage } from './base';
 
@@ -24,6 +29,8 @@ const coreClientSchemas = [
   connectWalletRequestSchema,
   signAndSendTransactionRequestSchema,
   openLnkRequestSchema,
+  createPostRequestSchema,
+  copyToClipboardRequestSchema,
 ] as const;
 
 const coreHostSchemas = [
@@ -31,6 +38,9 @@ const coreHostSchemas = [
   closeMessageSchema,
   connectWalletResponseSchema,
   signAndSendTransactionResponseSchema,
+  createPostResponseSchema,
+  copyToClipboardResponseSchema,
+  contentReactionResponseSchema,
 ] as const;
 
 export type CoreClientMessageSchema = (typeof coreClientSchemas)[number];

@@ -86,21 +86,24 @@ export class CanvasWallet extends AbstractWallet implements Wallet {
     };
   }
 
-  constructor(private canvasClient: CanvasClient) {
+  private options: { canvasClient: CanvasClient };
+
+  constructor(canvasClient: CanvasClient) {
     super();
 
+    this.options = { canvasClient };
     if (new.target === CanvasWallet) {
       Object.freeze(this);
     }
   }
 
   setCanvasClient(canvasClient: CanvasClient) {
-    this.canvasClient = canvasClient;
+    this.options.canvasClient = canvasClient;
   }
 
   #connect: StandardConnectMethod = async ({ silent } = {}) => {
     if (silent) return { accounts: this.accounts };
-    const canvasResponse = await this.canvasClient.connectWallet(
+    const canvasResponse = await this.options.canvasClient.connectWallet(
       this.chains[0],
     );
 
@@ -300,10 +303,11 @@ export class CanvasWallet extends AbstractWallet implements Wallet {
     message: CanvasInterface.ClientMessage,
     schema: T,
   ) {
-    const canvasResponse = await this.canvasClient.sendMessageAndWaitResponse(
-      message,
-      schema,
-    );
+    const canvasResponse =
+      await this.options.canvasClient.sendMessageAndWaitResponse(
+        message,
+        schema,
+      );
     return await this.validateResponse(canvasResponse);
   }
 }

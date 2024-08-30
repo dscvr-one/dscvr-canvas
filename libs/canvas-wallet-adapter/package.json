@@ -1,6 +1,6 @@
 {
   "name": "@dscvr-one/canvas-wallet-adapter",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Custom canvas wallet that provides a bridge between the canvas client sdk and the managed host wallets",
   "type": "module",
   "main": "src/index.ts",
@@ -33,7 +33,7 @@
   ],
   "dependencies": {
     "@dscvr-one/canvas-client-sdk": "~1.1.0",
-    "@dscvr-one/canvas-wallet-interface": "~1.0.0",
+    "@dscvr-one/canvas-wallet-interface": "~1.0.2",
     "@solana/wallet-adapter-base": "^0.9.23",
     "@solana/wallet-standard": "^1.1.2",
     "@solana/wallet-standard-wallet-adapter-base": "^1.1.2",

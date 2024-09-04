@@ -164,13 +164,13 @@ const submit = () => {
     </div>
 
     <div class="flex flex-col md:flex-row items-center gap-4 w-full">
-      <label for="amount" class="min-w-28" step="0.000000001">Amount (SOL)</label>
+      <label for="amount" class="min-w-28">Amount (SOL)</label>
       <input
         type="number"
         name="amount"
         class="flex-1 text-gray-700 border border-gray-700 rounded-xl w-full"
-        v-model="amount"
         step="0.000000001"
+        v-model="amount"
       />
     </div>
     <p v-if="errorMessage" class="text-red-500">{{ errorMessage }}</p>

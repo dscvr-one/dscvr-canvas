@@ -25,13 +25,8 @@ export const CanvasProvider = ({ children }: { children: React.ReactNode }) => {
   const [canvasContext, setCanvasContext] = useState<CanvasContextType>({});
   const resizeObserverRef = useRef<ResizeObserver>();
 
-  const initialize = async () => {
-    const canvasClient = createCanvasClient();
-    setCanvasContext({ client: canvasClient });
-
-    if (!canvasClient) return;
+  const initialize = async (canvasClient: CanvasClient) => {
     registerCanvasWallet(canvasClient);
-
     try {
       const response = await canvasClient.ready();
       const isValidResponse = await validateHostMessage(response);
@@ -48,10 +43,14 @@ export const CanvasProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
-    initialize();
+    const canvasClient = createCanvasClient();
+    setCanvasContext({ client: canvasClient });
+
+    if (!canvasClient) return;
+    initialize(canvasClient);
 
     return () => {
-      canvasContext.client?.destroy();
+      canvasClient?.destroy();
     };
   }, []);
 
@@ -66,7 +65,7 @@ export const CanvasProvider = ({ children }: { children: React.ReactNode }) => {
         resizeObserverRef.current?.disconnect();
       };
     }
-  }, [canvasContext, canvasContext.client]);
+  }, [canvasContext.client]);
 
   return (
     <CanvasContext.Provider value={{ ...canvasContext }}>

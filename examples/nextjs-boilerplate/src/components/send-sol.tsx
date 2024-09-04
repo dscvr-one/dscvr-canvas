@@ -28,7 +28,8 @@ export default function SendSol() {
     if (exists) {
       walletContext.select(exists.adapter.name);
     }
-  }, [walletContext, walletContext.wallets, walletContext.wallet]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [walletContext.wallets, walletContext.wallet]);
 
   const clear = () => {
     setErrorMessage(undefined);

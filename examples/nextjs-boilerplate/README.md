@@ -124,12 +124,7 @@ const CanvasContext = createContext<CanvasContextType>({});
 export const CanvasProvider = ({ children }: { children: React.ReactNode }) => {
   const [canvasContext, setCanvasContext] = useState<CanvasContextType>({});
 
-  const initialize = async () => {
-    const canvasClient = createCanvasClient();
-    setCanvasContext({ client: canvasClient });
-
-    if (!canvasClient) return;
-
+  const initialize = async (canvasClient: CanvasClient) => {
     try {
       const response = await canvasClient.ready();
       if (isValidResponse) {
@@ -145,10 +140,14 @@ export const CanvasProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
-    initialize();
+    const canvasClient = createCanvasClient();
+    setCanvasContext({ client: canvasClient });
+    if (!canvasClient) return;
+
+    initialize(canvasClient);
 
     return () => {
-      canvasContext.client?.destroy();
+      canvasClient?.destroy();
     };
   }, []);
 
@@ -288,7 +287,7 @@ useEffect(() => {
       resizeObserverRef.current?.disconnect();
     };
   }
-}, [canvasContext, canvasContext.client]);
+}, [canvasContext.client]);
 ```
 
 This way when your canvas changes height, it updates on the post as well.
@@ -317,11 +316,7 @@ This are the steps to use it:
 ```tsx
 import { registerCanvasWallet } from '@dscvr-one/canvas-wallet-adapter';
   // ...
-  const initialize = async () => {
-    const canvasClient = createCanvasClient();
-    setCanvasContext({ client: canvasClient });
-
-    if (!canvasClient) return;
+  const initialize = async (canvasClient: CanvasClient) => {
     registerCanvasWallet(canvasClient);
     // ...
 ```
@@ -382,7 +377,7 @@ const walletContext = useWallet();
 
 useEffect(() => {
   console.log('Available Wallets', walletContext.wallets);
-}, [walletContext, walletContext.wallets]);
+}, [walletContext.wallets]);
 ```
 
 #### Use solana wallets standard
@@ -424,7 +419,8 @@ export default function SendSol() {
     if (exists) {
       walletContext.select(exists.adapter.name);
     }
-  }, [walletContext, walletContext.wallets, walletContext.wallet]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [walletContext.wallets, walletContext.wallet]);
 
   const clear = () => {
     setErrorMessage(undefined);

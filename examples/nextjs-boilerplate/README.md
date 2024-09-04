@@ -106,8 +106,7 @@ Copy this contents into the file
 ```ts
 import React, { useState, createContext, useEffect, useContext } from 'react';
 import {
-  createCanvasClient,
-  type CanvasClient,
+  CanvasClient,
   type CanvasInterface,
 } from '@dscvr-one/canvas-client-sdk';
 
@@ -140,7 +139,7 @@ export const CanvasProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
-    const canvasClient = createCanvasClient();
+    canvasClient = new CanvasClient();
     setCanvasContext({ client: canvasClient });
     if (!canvasClient) return;
 

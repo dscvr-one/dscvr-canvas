@@ -100,10 +100,10 @@ Here we will use a custom plugin for Vue.
 Create a file named `plugins/canvas.client.ts`, by having the `.client.ts` prefix nuxt knows it only runs on the client
 
 ```ts
-import { createCanvasClient } from '@dscvr-one/canvas-client-sdk';
+import { CanvasClient } from '@dscvr-one/canvas-client-sdk';
 
 export default defineNuxtPlugin(async (nuxtApp) => {
-  const canvasClient = createCanvasClient();
+  const canvasClient = new CanvasClient();
 
   const initResponse = await canvasClient?.ready();
 
@@ -243,7 +243,7 @@ This are the steps to use it:
 import { registerCanvasWallet } from '@dscvr-one/canvas-wallet-adapter';
 // ...
 export default defineNuxtPlugin(async (nuxtApp) => {
-  const canvasClient = createCanvasClient();
+  const canvasClient = new CanvasClient();
   /// ...
 
   if (canvasClient) {

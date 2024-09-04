@@ -10,7 +10,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@dscvr-one/canvas-client-sdk": "~2.0.0",
+    "@dscvr-one/canvas-client-sdk": "^1.1.0",
     "@dscvr-one/canvas-wallet-adapter": "^1.0.1",
     "@nuxtjs/tailwindcss": "^6.12.1",
     "@solana/wallet-adapter-base": "^0.9.23",

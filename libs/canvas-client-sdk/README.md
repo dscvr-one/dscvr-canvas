@@ -30,16 +30,15 @@ To use the SDK:
 
 ```typescript
 import {
-  createCanvasClient,
+  CanvasClient,
   type CanvasInterface,
-  type CanvasClient,
 } from '@dscvr-one/canvas-client-sdk';
 ```
 
 2. Instantiate the `CanvasClient`:
 
 ```typescript
-const canvasClient = createCanvasClient();
+const canvasClient = new CanvasClient();
 ```
 
 3. Start the handshake:
@@ -64,7 +63,7 @@ e.g `Vue`
 
 ```typescript
 onMounted(() => {
-  canvasClient = createCanvasClient();
+  canvasClient = new CanvasClient();
   if (!canvasClient) return;
   response = await canvasClient.ready();
 });
@@ -78,7 +77,7 @@ e.g `React`
 
 ```typescript
 useEffect(() => {
-  canvasClient = createCanvasClient();
+  canvasClient = new CanvasClient();
   if (canvasClient) {
     response = await canvasClient.ready();
   }

@@ -36,8 +36,8 @@ importers:
   examples/getting-started:
     dependencies:
       '@dscvr-one/canvas-client-sdk':
-        specifier: ~2.0.0
-        version: link:../../libs/canvas-client-sdk
+        specifier: ^1.1.0
+        version: 1.1.1
       vue:
         specifier: ^3.4.29
         version: 3.4.32(typescript@5.4.5)
@@ -106,8 +106,8 @@ importers:
   examples/jupiter-swap:
     dependencies:
       '@dscvr-one/canvas-client-sdk':
-        specifier: ~2.0.0
-        version: link:../../libs/canvas-client-sdk
+        specifier: ^1.1.0
+        version: 1.1.1
       '@dscvr-one/canvas-wallet-adapter':
         specifier: ^1.0.1
         version: link:../../libs/canvas-wallet-adapter
@@ -185,8 +185,8 @@ importers:
   examples/nextjs-boilerplate:
     dependencies:
       '@dscvr-one/canvas-client-sdk':
-        specifier: ~2.0.0
-        version: link:../../libs/canvas-client-sdk
+        specifier: ^1.1.0
+        version: 1.1.1
       '@dscvr-one/canvas-wallet-adapter':
         specifier: ^1.0.1
         version: link:../../libs/canvas-wallet-adapter
@@ -237,8 +237,8 @@ importers:
   examples/nuxt-boilerplate:
     dependencies:
       '@dscvr-one/canvas-client-sdk':
-        specifier: ~2.0.0
-        version: link:../../libs/canvas-client-sdk
+        specifier: ^1.1.0
+        version: 1.1.1
       '@dscvr-one/canvas-wallet-adapter':
         specifier: ^1.0.1
         version: link:../../libs/canvas-wallet-adapter
@@ -267,8 +267,8 @@ importers:
   examples/transaction:
     dependencies:
       '@dscvr-one/canvas-client-sdk':
-        specifier: ~2.0.0
-        version: link:../../libs/canvas-client-sdk
+        specifier: ^1.1.0
+        version: 1.1.1
       '@solana/web3.js':
         specifier: ^1.91.4
         version: 1.95.1
@@ -453,8 +453,8 @@ importers:
   libs/canvas-wallet-adapter:
     dependencies:
       '@dscvr-one/canvas-client-sdk':
-        specifier: ~2.0.0
-        version: link:../canvas-client-sdk
+        specifier: ^1.1.0
+        version: 1.1.1
       '@dscvr-one/canvas-wallet-interface':
         specifier: ~1.0.2
         version: link:../canvas-wallet-interface
@@ -2627,6 +2627,19 @@ packages:
       postcss-selector-parser: ^6.0.13
     dependencies:
       postcss-selector-parser: 6.1.2
+    dev: false
+
+  /@dscvr-one/canvas-client-sdk@1.1.1:
+    resolution: {integrity: sha512-4px0p913KDO1ZNF6h2/MVRGabkvEmW90yXxKoCypWLedYxWFiI1FNjRjkRvuZQa2Y2C2YHN5FRhbKh5UXjjWGQ==}
+    dependencies:
+      '@dscvr-one/canvas-interface': 1.1.1
+      eventemitter3: 5.0.1
+    dev: false
+
+  /@dscvr-one/canvas-interface@1.1.1:
+    resolution: {integrity: sha512-6RjpLGpl+u3+w7mOEM80pflZPC2fX9Ke+V0dhzfbF5FcnTC4AN3zHYDa2AoOcFgz8J65NzDA8bFCNdLcfUvniQ==}
+    dependencies:
+      zod: 3.23.8
     dev: false
 
   /@emotion/babel-plugin@11.11.0:

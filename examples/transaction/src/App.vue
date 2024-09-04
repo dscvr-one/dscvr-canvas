@@ -1,10 +1,6 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue';
-import {
-  createCanvasClient,
-  type CanvasInterface,
-  type CanvasClient
-} from '@dscvr-one/canvas-client-sdk';
+import { CanvasClient, type CanvasInterface } from '@dscvr-one/canvas-client-sdk';
 import TransactionForm from './components/TransactionForm.vue';
 import { validateHostMessage } from './api/dscvr';
 
@@ -28,7 +24,7 @@ const start = async () => {
 };
 
 onMounted(() => {
-  canvasClient = createCanvasClient();
+  canvasClient = new CanvasClient();
   start();
 });
 

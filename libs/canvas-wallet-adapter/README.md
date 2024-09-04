@@ -33,7 +33,7 @@ import { registerCanvasWallet } from '@dscvr-one/canvas-wallet-adapter';
 2. Apply function tp the `CanvasClient` instance:
 
 ```typescript
-const canvasClient = createCanvasClient();
+const canvasClient = new CanvasClient();
 if (canvasClient) {
   registerCanvasWallet(canvasClient);
 }

@@ -2,18 +2,13 @@
 
 ##### Chores
 
-- release v1.0.2 canvas wallet (7ab42e08)
-- release v1.1.1 canvas sdk (9acdacd1)
-- release v1.1.1 canvas interface (84b470da)
-- release v1.1.0 (968f4553)
-- release v1.0.7 (008660d2)
-- pump up libs version to 1.0.5 (85abb605)
-- first commit (73804183)
+- release v2.0.0 canvas sdk (11d5df9)
 
 ##### New Features
 
 - nuxt-boilerplate example (4fd03ccb)
 - nextjs-boilerplate example (27eb91b3)
+- createCanvasClient method (fdce35a)
 
 #### 1.1.1 (2024-09-04)
 

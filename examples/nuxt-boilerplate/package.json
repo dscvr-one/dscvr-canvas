@@ -1,0 +1,23 @@
+{
+  "name": "nuxt-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@dscvr-one/canvas-client-sdk": "workspace:^",
+    "@dscvr-one/canvas-wallet-adapter": "workspace:^1.0.1",
+    "@nuxtjs/tailwindcss": "^6.12.1",
+    "@solana/wallet-adapter-base": "^0.9.23",
+    "@solana/web3.js": "^1.91.4",
+    "nuxt": "^3.13.0",
+    "nuxt-security": "2.0.0-rc.9",
+    "solana-wallets-vue": "^0.6.1",
+    "vue": "latest"
+  }
+}

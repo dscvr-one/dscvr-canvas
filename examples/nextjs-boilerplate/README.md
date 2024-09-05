@@ -120,7 +120,7 @@ type CanvasContextType = {
 
 const CanvasContext = createContext<CanvasContextType>({});
 
-// 2. Create the context provider for _app.tsx
+// 2. Create the context provider for `pages/_app.tsx` (or `app/layout.tsx`)
 export const CanvasProvider = ({ children }: { children: React.ReactNode }) => {
   const [canvasContext, setCanvasContext] = useState<CanvasContextType>({});
 
@@ -173,7 +173,7 @@ export default CanvasContext;
 
 ```
 
-4. Use the provider in `pages/_app.tsx`
+4. Use the provider in `pages/_app.tsx` (or `app/layout.tsx`)
 
 ```tsx
 import { CanvasProvider } from '@/context/canvas';
@@ -335,7 +335,7 @@ This function will allow a custom wallet adapter to appear in the discover proce
 
 4. Provide the wallets
 
-On the file `pages/_app.tsx` add the `ConnectionProvider` and `WalletProvider` by solana
+On the file `pages/_app.tsx` (or `app/layout.tsx`) add the `ConnectionProvider` and `WalletProvider` by solana
 
 ```tsx
 import type { AppProps } from 'next/app';
@@ -366,6 +366,8 @@ export default function App({ Component, pageProps }: AppProps) {
   );
 }
 ```
+
+IMPORTANT: `CanvasProvider` must be a parent of `WalletProvider` otherwise the wallets wont pick upon the `Canvas Wallet` adapter.
 
 - `console.log` the wallets on your component to verify `DSCVR Canvas` is on the list
 

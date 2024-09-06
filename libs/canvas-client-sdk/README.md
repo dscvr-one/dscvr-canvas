@@ -29,13 +29,17 @@ To use the SDK:
 1. Import `CanvasClient` and `CanvasInterface` into your typescript project:
 
 ```typescript
-import { CanvasInterface, CanvasClient } from '@dscvr-one/canvas-client-sdk';
+import {
+  createCanvasClient,
+  type CanvasInterface,
+  type CanvasClient,
+} from '@dscvr-one/canvas-client-sdk';
 ```
 
 2. Instantiate the `CanvasClient`:
 
 ```typescript
-const canvasClient = new CanvasClient();
+const canvasClient = createCanvasClient();
 ```
 
 3. Start the handshake:
@@ -49,6 +53,41 @@ if (response) {
   const content: CanvasInterface.Handshake.Content = response.untrusted.content;
   // ...
 }
+```
+
+4. Destruction
+
+If the client is being instantiated in a react hook or in a vue component/composable (anything with a lifecycle),
+we recommend to destroy the client on hot refreshes to avoid `CanvasInterface.ClientAlreadyInitializedError` while on localhost.
+
+e.g `Vue`
+
+```typescript
+onMounted(() => {
+  canvasClient = createCanvasClient();
+  if (!canvasClient) return;
+  response = await canvasClient.ready();
+});
+
+onUnmounted(() => {
+  canvasClient?.destroy();
+});
+```
+
+e.g `React`
+
+```typescript
+useEffect(() => {
+  canvasClient = createCanvasClient();
+  if (canvasClient) {
+    response = await canvasClient.ready();
+  }
+
+  // Destroy the client on effect cleanup
+  return () => {
+    canvasClient?.destroy();
+  };
+});
 ```
 
 ## Contributing

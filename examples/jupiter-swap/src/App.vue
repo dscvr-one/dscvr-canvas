@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue';
-import { CanvasInterface, CanvasClient } from '@dscvr-one/canvas-client-sdk';
+import {
+  createCanvasClient,
+  type CanvasInterface,
+  type CanvasClient
+} from '@dscvr-one/canvas-client-sdk';
 import { registerCanvasWallet } from '@dscvr-one/canvas-wallet-adapter';
 import { jupiterRpcEndpoint } from './api/jupiter';
 import { validateHostMessage } from './api/dscvr';
@@ -41,16 +45,15 @@ const start = async () => {
 
 onMounted(() => {
   resizeObserver.observe(document.body);
-  canvasClient = new CanvasClient();
+  canvasClient = createCanvasClient();
+  if (!canvasClient) return;
   registerCanvasWallet(canvasClient);
   start();
 });
 
 onUnmounted(() => {
   resizeObserver?.disconnect();
-  if (canvasClient) {
-    canvasClient.destroy();
-  }
+  canvasClient?.destroy();
 });
 </script>
 

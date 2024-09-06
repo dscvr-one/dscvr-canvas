@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue';
-import { CanvasInterface, CanvasClient } from '@dscvr-one/canvas-client-sdk';
+import {
+  createCanvasClient,
+  type CanvasInterface,
+  type CanvasClient
+} from '@dscvr-one/canvas-client-sdk';
 import UserInfo from './components/UserInfo.vue';
 import ContentInfo from './components/ContentInfo.vue';
 import ContentReaction from './components/ContentReaction.vue';
@@ -62,15 +66,13 @@ const copyUsername = async () => {
 
 onMounted(() => {
   resizeObserver.observe(document.body);
-  canvasClient = new CanvasClient();
+  canvasClient = createCanvasClient();
   start();
 });
 
 onUnmounted(() => {
   resizeObserver?.disconnect();
-  if (canvasClient) {
-    canvasClient.destroy();
-  }
+  canvasClient?.destroy();
 });
 </script>
 

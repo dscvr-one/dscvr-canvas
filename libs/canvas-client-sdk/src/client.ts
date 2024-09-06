@@ -4,6 +4,7 @@ import * as CanvasInterface from '@dscvr-one/canvas-interface';
 export class CanvasClient {
   private sourceOrigin: string;
   private initialized = false;
+  private awaitingHandshake = false;
   private initResponse: CanvasInterface.Lifecycle.InitResponse | undefined =
     undefined;
   private initialInteractionRegistered = false;
@@ -12,6 +13,9 @@ export class CanvasClient {
     CanvasInterface.BaseHostMessage
   >();
 
+  /**
+   * @deprecated since version 2.0.0. Use `createCanvasClient` instead
+   */
   constructor() {
     if (typeof window === 'undefined') {
       throw new CanvasInterface.WindowNotDefinedError();
@@ -40,20 +44,20 @@ export class CanvasClient {
     if (onClose) {
       this.eventBus.on('lifecycle:close', onClose);
     }
+
     if (this.initResponse) {
       return this.initResponse;
-    } else {
-      if (!this.initialized) {
-        window.addEventListener('message', this.handleReceiveMessage);
-        window.addEventListener('click', this.handleInitialInteraction);
-        window.addEventListener('focus', this.handleInitialInteraction);
-        this.sendHandshake();
-        this.initialized = true;
-      }
-      return await this.subscribeOnce(
-        CanvasInterface.Lifecycle.initResponseSchema,
-      );
     }
+    if (!this.initialized) {
+      window.addEventListener('message', this.handleReceiveMessage);
+      window.addEventListener('click', this.handleInitialInteraction);
+      window.addEventListener('focus', this.handleInitialInteraction);
+      this.sendHandshake();
+      this.initialized = true;
+    }
+    return await this.subscribeOnce(
+      CanvasInterface.Lifecycle.initResponseSchema,
+    );
   }
 
   subscribe<S extends CanvasInterface.BaseHostMessageSchema>(
@@ -220,6 +224,10 @@ export class CanvasClient {
   }
 
   private sendHandshake() {
+    if (this.awaitingHandshake) {
+      return;
+    }
+    this.awaitingHandshake = true;
     this.sendMessage({
       type: 'lifecycle:init-request',
       payload: {
@@ -242,9 +250,12 @@ export class CanvasClient {
       CanvasInterface.Lifecycle.initResponseSchema.safeParse(messageData);
     if (parsedInitMessage.success) {
       if (this.initResponse) {
-        throw new CanvasInterface.ClientAlreadyInitializedError();
+        throw new CanvasInterface.ClientAlreadyInitializedError(
+          'Use `destroy` method to reset the client',
+        );
       }
       this.initResponse = parsedInitMessage.data;
+      this.awaitingHandshake = false;
     } else if (!this.initResponse) {
       throw new CanvasInterface.ClientNotInitializedError();
     }

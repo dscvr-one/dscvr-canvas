@@ -20,6 +20,8 @@ type CanvasContextType = {
 
 const CanvasContext = createContext<CanvasContextType>({});
 
+let canvasClient: CanvasClient | undefined = undefined;
+
 export const CanvasProvider = ({ children }: { children: React.ReactNode }) => {
   const [canvasContext, setCanvasContext] = useState<CanvasContextType>({});
   const resizeObserverRef = useRef<ResizeObserver>();
@@ -42,15 +44,12 @@ export const CanvasProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
-    const canvasClient = new CanvasClient();
+    if (canvasClient) return;
+    canvasClient = new CanvasClient();
     setCanvasContext({ client: canvasClient });
 
     if (!canvasClient) return;
     initialize(canvasClient);
-
-    return () => {
-      canvasClient?.destroy();
-    };
   }, []);
 
   useEffect(() => {

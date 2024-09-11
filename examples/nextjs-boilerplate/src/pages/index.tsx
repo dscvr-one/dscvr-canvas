@@ -1,6 +1,6 @@
 import { Inter } from 'next/font/google';
 import { useCanvasContext } from '@/context/canvas';
-import SendSol from '@/components/send-sol';
+import Link from 'next/link';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -29,7 +29,9 @@ export default function Home() {
           </span>
         </div>
       )}
-      <SendSol />
+      <Link href="/send" className="underline text-purple-500 pt-6">
+        Send Sol
+      </Link>
     </main>
   );
 }

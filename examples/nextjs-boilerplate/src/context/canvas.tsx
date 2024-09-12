@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 import {
   CanvasClient,
+  isIframeContext,
   type CanvasInterface,
 } from '@dscvr-one/canvas-client-sdk';
 import { registerCanvasWallet } from '@dscvr-one/canvas-wallet-adapter';
@@ -45,7 +46,7 @@ export const CanvasProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     if (canvasClient) return;
-    canvasClient = new CanvasClient();
+    canvasClient = isIframeContext() ? new CanvasClient() : undefined;
     setCanvasContext({ client: canvasClient });
 
     if (!canvasClient) return;

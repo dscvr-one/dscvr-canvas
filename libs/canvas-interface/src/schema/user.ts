@@ -127,6 +127,20 @@ export const contentReactionResponseSchema = createHostMessageSchema(
   ]),
 );
 
+export const createShareLinkRequestMessageSchema = createClientMessageSchema(
+  'user:create-share-link-request',
+  zod.object({
+    urlData: zod.string(),
+  }),
+);
+
+export const createShareLinkResponseMessageSchema = createHostMessageSchema(
+  'user:create-share-link-response',
+  zod.object({
+    url: zod.string(),
+  }),
+);
+
 export interface InitialInteractionRequest
   extends BaseClientMessage<typeof initialInteractionRequestSchema> {}
 export interface ResizeRequest
@@ -152,3 +166,7 @@ export interface CopyToClipboardResponse
   extends BaseHostMessage<typeof copyToClipboardResponseSchema> {}
 export interface ContentReactionResponse
   extends BaseHostMessage<typeof contentReactionResponseSchema> {}
+export interface CreateShareLinkRequest
+  extends BaseClientMessage<typeof createShareLinkRequestMessageSchema> {}
+export interface CreateShareLinkResponse
+  extends BaseHostMessage<typeof createShareLinkResponseMessageSchema> {}

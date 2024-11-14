@@ -30,6 +30,7 @@ export const initResponseSchema = createHostMessageSchema(
   zod.object({
     user: userSchema.optional(),
     content: contentSchema.optional(),
+    urlData: zod.string().optional(),
   }),
 );
 

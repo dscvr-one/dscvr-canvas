@@ -19,6 +19,8 @@ import {
   copyToClipboardRequestSchema,
   copyToClipboardResponseSchema,
   contentReactionResponseSchema,
+  createShareLinkResponseMessageSchema,
+  createShareLinkRequestMessageSchema,
 } from './user';
 import type { BaseClientMessage, BaseHostMessage } from './base';
 
@@ -31,6 +33,7 @@ const coreClientSchemas = [
   openLnkRequestSchema,
   createPostRequestSchema,
   copyToClipboardRequestSchema,
+  createShareLinkRequestMessageSchema,
 ] as const;
 
 const coreHostSchemas = [
@@ -41,6 +44,7 @@ const coreHostSchemas = [
   createPostResponseSchema,
   copyToClipboardResponseSchema,
   contentReactionResponseSchema,
+  createShareLinkResponseMessageSchema,
 ] as const;
 
 export type CoreClientMessageSchema = (typeof coreClientSchemas)[number];

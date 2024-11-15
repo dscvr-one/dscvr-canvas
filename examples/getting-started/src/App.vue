@@ -8,15 +8,19 @@ import {
 import UserInfo from './components/UserInfo.vue';
 import ContentInfo from './components/ContentInfo.vue';
 import ContentReaction from './components/ContentReaction.vue';
+import UrlData from './components/UrlData.vue';
 import { validateHostMessage } from './api/dscvr';
 
-const copyToClipboardOriginalMessage = 'Copy username to clipboard';
+const copyUsernameToClipboardMessage = 'Copy username to clipboard';
+const copyShareLinkMessage = 'Share canvas';
 let canvasClient: CanvasClient | undefined;
 const isReady = ref(false);
 const user = ref<CanvasInterface.Lifecycle.User>();
 const content = ref<CanvasInterface.Lifecycle.Content>();
+const urlData = ref<string>();
 const currentReaction = ref<string>();
-const copyToClipboardLabel = ref(copyToClipboardOriginalMessage);
+const copyUsernameToClipboardLabel = ref(copyUsernameToClipboardMessage);
+const copyShareLinkLabel = ref(copyShareLinkMessage);
 const resizeObserver = new ResizeObserver(() => canvasClient?.resize());
 
 const start = async () => {
@@ -28,6 +32,7 @@ const start = async () => {
   if (response) {
     user.value = response.untrusted.user;
     content.value = response.untrusted.content;
+    urlData.value = response.untrusted.urlData;
   }
   canvasClient.onContentReaction((reaction) => {
     if (!validateHostMessage(reaction)) return;
@@ -58,9 +63,21 @@ const setBodyHeight = (height: number) => {
 const copyUsername = async () => {
   if (!canvasClient || !user.value) return;
   await canvasClient.copyToClipboard(user.value.username);
-  copyToClipboardLabel.value = 'Copied!';
+  copyUsernameToClipboardLabel.value = 'Copied!';
   setTimeout(() => {
-    copyToClipboardLabel.value = copyToClipboardOriginalMessage;
+    copyUsernameToClipboardLabel.value = copyUsernameToClipboardMessage;
+  }, 2000);
+};
+
+const copyShareLink = async () => {
+  if (!canvasClient || !content.value) return;
+
+  const link = await canvasClient.createShareLink('test data');
+
+  await canvasClient.copyToClipboard(link.untrusted.url);
+  copyShareLinkLabel.value = 'Copied!';
+  setTimeout(() => {
+    copyShareLinkLabel.value = copyShareLinkMessage;
   }, 2000);
 };
 
@@ -83,6 +100,7 @@ onUnmounted(() => {
       <user-info v-if="user" :user="user" @open="openUserProfile" />
       <content-info v-if="content" :content="content" />
       <content-reaction :reaction="currentReaction" />
+      <url-data v-if="urlData" :urlData="urlData" />
       <button
         class="text-white font-bold py-2 px-4 rounded bg-blue-500 hover:bg-blue-400 hover:border-blue-500"
         @click="createNewPost"
@@ -94,7 +112,15 @@ onUnmounted(() => {
         @click="copyUsername"
       >
         <transition>
-          <span :key="copyToClipboardLabel">{{ copyToClipboardLabel }}</span>
+          <span :key="copyUsernameToClipboardLabel">{{ copyUsernameToClipboardLabel }}</span>
+        </transition>
+      </button>
+      <button
+        class="text-white font-bold py-2 px-4 rounded bg-orange-500 hover:bg-orange-400 hover:border-orange-500"
+        @click="copyShareLink"
+      >
+        <transition>
+          <span :key="copyShareLinkLabel">{{ copyShareLinkLabel }}</span>
         </transition>
       </button>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">

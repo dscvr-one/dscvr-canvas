@@ -1,6 +1,6 @@
 {
   "name": "@dscvr-one/canvas-interface",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "Types for iframes to interact with dscvr",
   "type": "module",
   "main": "src/index.ts",
@@ -14,9 +14,6 @@
   ],
   "scripts": {
     "build": "tsup",
-    "lint:js": "npm run lint:eslint && npm run lint:prettier",
-    "lint:eslint": "eslint \"{,!(node_modules|dist|static)/**/}*.{js,ts}\" --ignore-path .gitignore",
-    "lint:prettier": "prettier --check \"{,!(node_modules|dist|static)/**/}*.{js,ts}\" --ignore-path .gitignore",
     "release": "shipjs prepare",
     "release:dry": "shipjs prepare --dry-run",
     "release:auto": "shipjs prepare --yes"

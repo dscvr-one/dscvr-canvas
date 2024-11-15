@@ -29,7 +29,7 @@
     "zod"
   ],
   "dependencies": {
-    "@dscvr-one/canvas-interface": "~1.1.0",
+    "@dscvr-one/canvas-interface": "~1.2.0",
     "@solana/wallet-adapter-base": "^0.9.23",
     "zod": "^3.23.8"
   },

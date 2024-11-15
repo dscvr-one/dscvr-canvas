@@ -145,6 +145,20 @@ export class CanvasClient {
     );
   }
 
+  createShareLink(
+    urlData: string,
+  ): Promise<CanvasInterface.User.CreateShareLinkResponse> {
+    return this.sendMessageAndWaitResponse(
+      {
+        type: 'user:create-share-link-request',
+        payload: {
+          urlData,
+        },
+      },
+      CanvasInterface.User.createShareLinkResponseMessageSchema,
+    );
+  }
+
   copyToClipboard(
     content: string,
   ): Promise<CanvasInterface.User.CopyToClipboardResponse> {

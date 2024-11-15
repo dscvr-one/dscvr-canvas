@@ -29,7 +29,7 @@
     "rpc"
   ],
   "dependencies": {
-    "@dscvr-one/canvas-interface": "~1.1.0",
+    "@dscvr-one/canvas-interface": "~1.2.0",
     "eventemitter3": "^5.0.1"
   },
   "license": "MIT",

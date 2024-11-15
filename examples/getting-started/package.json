@@ -1,6 +1,6 @@
 {
   "name": "getting-started",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -13,7 +13,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "@dscvr-one/canvas-client-sdk": "^1.1.0",
+    "@dscvr-one/canvas-client-sdk": "~2.0.0",
     "vue": "^3.4.29"
   },
   "devDependencies": {
